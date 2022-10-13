@@ -14,13 +14,13 @@ jobs:
 # Set docker image names.
     - name: Setup env variables
       run: |
-        echo "DOCKER_SERVICE=kvalitetsit/kithugs" >> $GITHUB_ENV
-        echo "DOCKER_DOCUMENTATION=kvalitetsit/kithugs-documentation" >> $GITHUB_ENV
+        echo "DOCKER_SERVICE=kvalitetsit/medcom-vdx-healthcheck" >> $GITHUB_ENV
+        echo "DOCKER_DOCUMENTATION=kvalitetsit/medcom-vdx-healthcheck-documentation" >> $GITHUB_ENV
 
 # Checkout source code
     - uses: actions/checkout@v3
 
-# Fail if DOCKER_SERVICE is kithugs and repo is not kithugs. This step can be deleted once
+# Fail if DOCKER_SERVICE is medcom-vdx-healthcheck and repo is not medcom-vdx-healthcheck. This step can be deleted once
     - name: Initial build
       run: ./build/failOnFirstBuild.sh
 
