@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>kithugs</artifactId>
-        <groupId>dk.kvalitetsit.kithugs</groupId>
+        <artifactId>medcom-vdx-healthcheck</artifactId>
+        <groupId>dk.kvalitetsit.medcom-vdx-healthcheck</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,7 @@
     <dependencies>
         <!-- Definition of api -->
         <dependency>
-            <groupId>dk.kvalitetsit.kithugs</groupId>
+            <groupId>dk.kvalitetsit.medcom-vdx-healthcheck</groupId>
             <artifactId>documentation</artifactId>
         </dependency>
 
@@ -31,22 +31,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-        </dependency>
-
-        <!-- database -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
         </dependency>
 
         <!-- Easy string handling -->
