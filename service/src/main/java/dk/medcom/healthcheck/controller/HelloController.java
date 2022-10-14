@@ -2,7 +2,7 @@ package dk.medcom.healthcheck.controller;
 
 import dk.medcom.healthcheck.service.HelloService;
 import dk.medcom.healthcheck.service.model.HelloServiceInput;
-import org.openapitools.api.KithugsApi;
+import org.openapitools.api.HealthcheckApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 // CORS - Consider if this is needed in your application. Only here to make Swagger UI work.
 @CrossOrigin(origins = "http://localhost")
-public class HelloController implements KithugsApi {
+public class HelloController implements HealthcheckApi {
     private static final Logger logger = LoggerFactory.getLogger(HelloController.class);
     private final HelloService helloService;
 

@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  title: Kithugs
-  description: API description for KITHUGS.
+  title: Healthcheck
+  description: API description for Healthcheck service.
   version: "1.0.0"
   contact:
     email: development@kvalitetitsit.dk
 tags:
-  - name: KITHUGS
-    description: KITHUGS related API's
+  - name: Healthcheck
+    description: Healthcheck API
 
 servers:
   - url: '{protocol}://{environment}:{port}'
@@ -29,7 +29,7 @@ paths:
   /v1/hello:
     post:
       tags:
-        - KITHUGS
+        - Healthcheck
       summary: Call the thugs service
       description: Post your name and get some hugs or meet some thugs.
       requestBody:
