@@ -8,11 +8,11 @@ import org.openapitools.client.model.HelloRequest;
 
 import static org.junit.Assert.*;
 
-public class HelloIT extends AbstractIntegrationTest {
+public class HealthcheckIT extends AbstractIntegrationTest {
 
     private final HealthcheckApi helloApi;
 
-    public HelloIT() {
+    public HealthcheckIT() {
         var apiClient = new ApiClient();
         apiClient.setBasePath(getApiBasePath());
 
