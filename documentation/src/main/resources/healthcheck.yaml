@@ -26,26 +26,19 @@ servers:
           - 8080
         default: 8080
 paths:
-  /v1/hello:
-    post:
+  /v1/healthcheck:
+    get:
       tags:
         - Healthcheck
-      summary: Call the thugs service
-      description: Post your name and get some hugs or meet some thugs.
-      requestBody:
-        description: Your name
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/helloRequest'
+      summary: Check health of services
+      description: Check the health of Video API, STS, SMS service and short link service.
       responses:
         '200':
           description: Ok
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/helloResponse'
+                $ref: '#/components/schemas/healthcheckResponse'
 
 components:
   responses:
@@ -56,30 +49,46 @@ components:
     '403':
       description: "Forbidden. This could be because: <br> * The requested information does not belong the organisation of the user <br> * The calling user does not have the required roles"
   schemas:
-    helloResponse:
+    healthcheckResponse:
       type: object
       required:
-        - name
-        - now
+        - sts
+        - video-api
+        - short-link
+        - sms
       properties:
-        name:
-          description: Your name
-          type: string
-          example: "John Doe"
-        now:
-          description: Time request was received
-          type: string
-          format: date-time
-        i_can_be_null:
-          type: string
-          nullable: true
+        sts:
+          description: STS status
+          $ref: '#/components/schemas/status'
+        video-api:
+          description: Video API status
+          $ref: '#/components/schemas/status'
+        video-api-access-token:
+          description: Create access token for VideoAPI.
+          $ref: '#/components/schemas/status'
+        short-link:
+          description: Short link status
+          $ref: '#/components/schemas/status'
+        sms:
+          description: SMS service status
+          $ref: '#/components/schemas/status'
 
-    helloRequest:
+    status:
       type: object
       required:
-        - name
+        - status
+        - response-time
       properties:
-        name:
-          description: Your name
+        status:
+          description: True if service is healthy
+          type: boolean
+          example: true
+        message:
+          description: Additional message if service is not healthy.
           type: string
-          example: "John Doe"
+          example: STS returned 501.
+        response-time:
+          description: Response time from service.
+          type: integer
+          format: int64
+
