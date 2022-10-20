@@ -56,3 +56,6 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 | LOG_LEVEL | Log Level for applikation  log. Defaults to INFO. | No |
 | LOG_LEVEL_FRAMEWORK | Log level for framework. Defaults to INFO. | No |
 | CORRELATION_ID | HTTP header to take correlation id from. Used to correlate log messages. Defaults to "x-request-id". | No
+| STS_URL_WSDL | URL for STS WSDL. | Yes |
+| STS_PROPERTIES | STS Properties location | Yes |
+| VIDEOAPI_ENDPOINT | Video API endpoint | Yes |
