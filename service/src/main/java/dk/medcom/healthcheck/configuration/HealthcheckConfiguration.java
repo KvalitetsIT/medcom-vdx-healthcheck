@@ -41,14 +41,14 @@ public class HealthcheckConfiguration {
     }
 
     @Bean
-    public VideoApiClient videoApiClient(WebClient.Builder webClientBuilder, @Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, KeyStore keyStore) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        return new VideoApiClientImpl(enhanceForMTls(webClientBuilder, keyStore), videoApiEndpoint);
+    public VideoApiClient videoApiClient(WebClient.Builder webClientBuilder, @Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        return new VideoApiClientImpl(enhanceForMTls(webClientBuilder, keyStore, keystorePassword), videoApiEndpoint);
     }
 
-    private WebClient.Builder enhanceForMTls(WebClient.Builder webClientBuilder, KeyStore keyStore) throws NoSuchAlgorithmException, KeyManagementException, UnrecoverableKeyException, KeyStoreException {
+    private WebClient.Builder enhanceForMTls(WebClient.Builder webClientBuilder, KeyStore keyStore, String password) throws NoSuchAlgorithmException, KeyManagementException, UnrecoverableKeyException, KeyStoreException {
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(
                 KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(keyStore, "Test1234".toCharArray()); // TODO Update
+        kmf.init(keyStore, password.toCharArray());
 
         KeyManager[] managers = kmf.getKeyManagers();
 
@@ -67,8 +67,8 @@ public class HealthcheckConfiguration {
     }
 
     @Bean
-    public AuthorizationClient authorizationClient(@Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, WebClient.Builder webClientBuilder, KeyStore keyStore) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        return new AuthorizationClientImpl(videoApiEndpoint + "/token", enhanceForMTls(webClientBuilder, keyStore));
+    public AuthorizationClient authorizationClient(@Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, WebClient.Builder webClientBuilder, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        return new AuthorizationClientImpl(videoApiEndpoint + "/token", enhanceForMTls(webClientBuilder, keyStore, keystorePassword));
     }
 
     @Bean
@@ -108,7 +108,7 @@ public class HealthcheckConfiguration {
     }
 
     @Bean
-    public KeyStore getKeyStore(@Value("${keystore.path}")String keystore, @Value("${keystore.password}")String keystorePassword) throws Exception {
+    public KeyStore getKeyStore(@Value("${STS_STORE}")String keystore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws Exception {
         KeyStore ks = KeyStore.getInstance("JKS");
         try (var keystoreInputStream = new FileInputStream(keystore)) {
             ks.load(keystoreInputStream, keystorePassword.toCharArray());
