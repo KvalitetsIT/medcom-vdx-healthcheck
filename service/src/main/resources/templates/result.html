@@ -1,0 +1,47 @@
+﻿<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html>
+<style>
+table, td, th {
+  border: 1px solid;
+}
+
+table {
+  border-collapse: collapse;
+}
+</style>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>VDX Health Check</title>
+</head>
+<body>
+
+<h1>VDX Health check</h1>
+
+<p>Executed at: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm zzz')}" /></p>
+
+<p>All Healthy:
+    <span th:if="${allOk}" style="color:#00FF00" th:text="Yes" />
+    <span th:if="${!allOk}" style="color:#FF0000" th:text="No" />
+</p>
+
+<table>
+    <tr>
+        <th>Service</th>
+        <th>Response time</th>
+        <th>Status</th>
+        <th>Message</th>
+    </tr>
+    <tr th:each="status : ${status}">
+        <td th:text="${status.name}" />
+        <td th:text="${status.responseTime} + 'ms'" />
+        <td th:text="${status.ok? 'OK' : 'Not OK'}" />
+        <td th:text="${status.message}" />
+    </tr>
+</table>
+
+<p>Refresh to execute again.</p>
+
+</body>
+</html>
+
