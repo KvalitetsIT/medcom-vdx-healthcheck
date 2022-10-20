@@ -24,12 +24,12 @@ public class HealthcheckServiceImpl implements HealthcheckService {
     private final VideoApiClient videoApiClient;
     private final TokenEncoder tokenEncoder;
 
-    public HealthcheckServiceImpl(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient) {
+    public HealthcheckServiceImpl(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient, TokenEncoder tokenEncoder) {
         this.stsClient = stsClient;
         this.shortLinkClient = shortLinkClient;
         this.authorizationClient = authorizationClient;
         this.videoApiClient = videoApiClient;
-        this.tokenEncoder = new TokenEncoder();
+        this.tokenEncoder = tokenEncoder;
     }
     @Override
     public HealthcheckResult checkHealth() {

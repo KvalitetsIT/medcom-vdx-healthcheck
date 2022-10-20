@@ -1,9 +1,6 @@
 package dk.medcom.healthcheck.configuration;
 
-import dk.medcom.healthcheck.client.security.AuthorizationClient;
-import dk.medcom.healthcheck.client.security.AuthorizationClientImpl;
-import dk.medcom.healthcheck.client.security.StsClient;
-import dk.medcom.healthcheck.client.security.StsClientImpl;
+import dk.medcom.healthcheck.client.security.*;
 import dk.medcom.healthcheck.service.HealthcheckService;
 import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
@@ -40,7 +37,7 @@ public class HealthcheckConfiguration {
 
     @Bean
     public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient) {
-        return new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient);
+        return new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, new TokenEncoder());
     }
 
     @Bean
