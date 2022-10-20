@@ -25,11 +25,10 @@ public class ServiceStarter {
 //        dockerNetwork = Network.newNetwork();
 
         System.setProperty("STS_URL_WSDL", "https://sts.vconf-stage.dk/sts/sts.wsdl");
-//        System.setProperty("service.url", "https://videoapi.vconf-stage.dk/videoapi");
+        System.setProperty("VIDEOAPI_ENDPOINT", "https://videoapi.vconf-stage.dk/videoapi");
         System.setProperty("STS_PROPERTIES", "sts.properties");
         System.setProperty("keystore.password", "Test1234");
         System.setProperty("keystore.path", "client.jks");
-
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }
 

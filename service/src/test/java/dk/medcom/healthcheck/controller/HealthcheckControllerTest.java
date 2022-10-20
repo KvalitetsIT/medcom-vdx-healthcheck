@@ -30,27 +30,33 @@ public class HealthcheckControllerTest {
         Status accessTokenStatus = new Status(false, "Some msg", 40L);
         var serviceResponse = new HealthcheckResult(stsStatus, videoStatus, shortLinkStatus, null, accessTokenStatus);
 
-        assertNotNull(serviceResponse);
-        assertNotNull(serviceResponse.sts());
-        assertNotNull(serviceResponse.accessTokenForVideoApi());
-        assertNotNull(serviceResponse.shortLink());
-        assertNotNull(serviceResponse.videoAPi());
-        assertNull(serviceResponse.sms());
+        Mockito.when(healthcheckService.checkHealth()).thenReturn(serviceResponse);
 
-        assertEquals(stsStatus.ok(), serviceResponse.sts().ok());
-        assertEquals(stsStatus.message(), serviceResponse.sts().message());
-        assertEquals(stsStatus.responseTime(), serviceResponse.sts().responseTime());
+        var result =healthcheckController.v1HealthcheckGet();
 
-        assertEquals(videoStatus.ok(), serviceResponse.videoAPi().ok());
-        assertEquals(videoStatus.message(), serviceResponse.videoAPi().message());
-        assertEquals(videoStatus.responseTime(), serviceResponse.videoAPi().responseTime());
+        assertNotNull(result);
+        var healthCheckResponse = result.getBody();
+        assertNotNull(healthCheckResponse);
+        assertNotNull(healthCheckResponse.getSts());
+        assertNotNull(healthCheckResponse.getVideoApiAccessToken());
+        assertNotNull(healthCheckResponse.getShortLink());
+        assertNotNull(healthCheckResponse.getVideoApi());
+        assertNull(healthCheckResponse.getSms());
 
-        assertEquals(shortLinkStatus.ok(), serviceResponse.shortLink().ok());
-        assertEquals(shortLinkStatus.message(), serviceResponse.shortLink().message());
-        assertEquals(shortLinkStatus.responseTime(), serviceResponse.shortLink().responseTime());
+        assertEquals(stsStatus.ok(), healthCheckResponse.getSts().getStatus());
+        assertEquals(stsStatus.message(), healthCheckResponse.getSts().getMessage());
+        assertEquals(stsStatus.responseTime(), healthCheckResponse.getSts().getResponseTime());
 
-        assertEquals(accessTokenStatus.ok(), serviceResponse.accessTokenForVideoApi().ok());
-        assertEquals(accessTokenStatus.message(), serviceResponse.accessTokenForVideoApi().message());
-        assertEquals(accessTokenStatus.responseTime(), serviceResponse.accessTokenForVideoApi().responseTime());
+        assertEquals(videoStatus.ok(), healthCheckResponse.getVideoApi().getStatus());
+        assertEquals(videoStatus.message(), healthCheckResponse.getVideoApi().getMessage());
+        assertEquals(videoStatus.responseTime(), healthCheckResponse.getVideoApi().getResponseTime());
+
+        assertEquals(shortLinkStatus.ok(), healthCheckResponse.getShortLink().getStatus());
+        assertEquals(shortLinkStatus.message(), healthCheckResponse.getShortLink().getMessage());
+        assertEquals(shortLinkStatus.responseTime(), healthCheckResponse.getShortLink().getResponseTime());
+
+        assertEquals(accessTokenStatus.ok(), healthCheckResponse.getVideoApiAccessToken().getStatus());
+        assertEquals(accessTokenStatus.message(), healthCheckResponse.getVideoApiAccessToken().getMessage());
+        assertEquals(accessTokenStatus.responseTime(), healthCheckResponse.getVideoApiAccessToken().getResponseTime());
     }
 }
