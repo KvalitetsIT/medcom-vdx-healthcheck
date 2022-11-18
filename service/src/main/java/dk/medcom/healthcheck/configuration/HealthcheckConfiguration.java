@@ -1,12 +1,12 @@
 package dk.medcom.healthcheck.configuration;
 
 import dk.medcom.healthcheck.client.security.*;
-import dk.medcom.healthcheck.service.HealthcheckService;
-import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClientImpl;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClientImpl;
+import dk.medcom.healthcheck.service.HealthcheckService;
+import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
