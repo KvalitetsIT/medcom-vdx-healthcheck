@@ -1,12 +1,14 @@
 package dk.medcom.healthcheck.configuration;
 
 import dk.medcom.healthcheck.client.security.*;
-import dk.medcom.healthcheck.service.HealthcheckService;
-import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClientImpl;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClientImpl;
+import dk.medcom.healthcheck.service.HealthcheckService;
+import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
+import dk.medcom.healthcheck.service.HealthcheckServiceMetricImpl;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
@@ -38,6 +40,11 @@ public class HealthcheckConfiguration {
     @Bean
     public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient) {
         return new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, new TokenEncoder());
+    }
+
+    @Bean
+    public HealthcheckService healthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
+        return new HealthcheckServiceMetricImpl(healthcheckService, meterRegistry);
     }
 
     @Bean

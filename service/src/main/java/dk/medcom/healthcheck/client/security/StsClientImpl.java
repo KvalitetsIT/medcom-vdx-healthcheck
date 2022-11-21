@@ -1,6 +1,7 @@
 package dk.medcom.healthcheck.client.security;
 
 import dk.medcom.healthcheck.client.Result;
+import io.micrometer.core.annotation.Timed;
 import org.apache.cxf.ws.security.tokenstore.SecurityToken;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ public class StsClientImpl implements StsClient {
     }
 
     @Override
+    @Timed
     public Result<SecurityToken> requestToken() {
         var start = System.currentTimeMillis();
         try {
