@@ -54,10 +54,11 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 | LOG_LEVEL_FRAMEWORK  | Log level for framework. Defaults to INFO.                                                           | No   |
 | CORRELATION_ID       | HTTP header to take correlation id from. Used to correlate log messages. Defaults to "x-request-id". | No   
 | STS_URL_WSDL         | URL for STS WSDL.                                                                                    | Yes  |
-| STS_TRUST_CERT       | Path to STS signing certificate.                                                                     | Yes     |
+| STS_TRUST_CERT       | Pat<br/>h to STS signing certificate.                                                                | Yes     |
 | STS_CLIENT_CERT      | Path to STS Client certificate.                                                                      | Yes |
 | STS_CLIENT_KEY       | Path to STS Client key.                                                                              | Yes |
 | VIDEOAPI_ENDPOINT    | Video API endpoint                                                                                   | Yes  |
+| HEALTHCHECK_RATE     | Rate of healthcheck in java.time.Duration compliant format.                                          | Yes |
 
 ## Running the service
 

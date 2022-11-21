@@ -18,6 +18,7 @@ public class ServiceStarter {
         System.setProperty("STS_TRUST_CERT", "sts.crt");
         System.setProperty("STS_STORE_PASSWORD", "Test1234");
         System.setProperty("STS_STORE", "client.jks");
+        System.setProperty("HEALCHECK_RATE", "PT5M");
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }

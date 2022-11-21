@@ -39,7 +39,8 @@ public class TimerConfiguration {
         return registry -> Timer.builder(name)
                 .distributionStatisticExpiry(Duration.ofMinutes(30L))
                 .publishPercentiles(1, 0.95, 0.9, 0.8)
-                .publishPercentileHistogram().tag("service", service)
+                .publishPercentileHistogram()
+                .tag("service", service)
                 .register(registry);
     }
 }

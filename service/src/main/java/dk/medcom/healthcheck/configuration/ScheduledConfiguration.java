@@ -16,7 +16,7 @@ public class ScheduledConfiguration {
     @Autowired
     private MeterRegistry meterRegistry;
 
-    @Scheduled(fixedRateString = "PT5M")
+    @Scheduled(fixedRateString = "${HEALTHCHECK_RATE}")
     public void executeHealthCheck() {
         healthcheckServiceMetricImpl.checkHealth();
     }
