@@ -5,10 +5,13 @@ import dk.medcom.healthcheck.service.model.HealthcheckResult;
 import dk.medcom.healthcheck.service.model.Status;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 public class HealthcheckServiceMetricImpl implements HealthcheckService {
+    private static final Logger logger = LoggerFactory.getLogger(HealthcheckServiceMetricImpl.class);
     private final HealthcheckService healthcheckService;
     private final MeterRegistry meterRegistry;
 
@@ -19,6 +22,8 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
 
     @Override
     public HealthcheckResult checkHealth() {
+        logger.info("Running healthcheck for prometheus metrics.");
+
         var stsTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_STS);
         var videoApiTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_VIDEO_API);
         var shortLinkTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_SHORT_LINK);
@@ -36,6 +41,7 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
 
     private void recordTimeIfPositiveResponse(Status status, Timer timer) {
         if(status.responseTime() > 0) {
+            logger.debug("Recording metric in timer.");
             timer.record(status.responseTime(), TimeUnit.MILLISECONDS);
         }
     }

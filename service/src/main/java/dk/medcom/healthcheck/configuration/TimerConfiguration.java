@@ -5,6 +5,8 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+
 @Configuration
 public class TimerConfiguration {
     public static final String TIMER_NAME = "vdx_healthcheck";
@@ -35,9 +37,9 @@ public class TimerConfiguration {
 
     private MeterBinder createTimer(String name, String service) {
         return registry -> Timer.builder(name)
+                .distributionStatisticExpiry(Duration.ofMinutes(30L))
                 .publishPercentiles(1, 0.95, 0.9, 0.8)
                 .publishPercentileHistogram().tag("service", service)
                 .register(registry);
     }
-
 }
