@@ -7,6 +7,8 @@ import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClientImpl;
 import dk.medcom.healthcheck.service.HealthcheckService;
 import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
+import dk.medcom.healthcheck.service.HealthcheckServiceMetricImpl;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
@@ -19,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -37,6 +40,11 @@ public class HealthcheckConfiguration {
     @Bean
     public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient) {
         return new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, new TokenEncoder());
+    }
+
+    @Bean
+    public HealthcheckService healthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
+        return new HealthcheckServiceMetricImpl(healthcheckService, meterRegistry);
     }
 
     @Bean
