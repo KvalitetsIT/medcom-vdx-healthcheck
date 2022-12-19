@@ -40,14 +40,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/healthcheckResponse'
 
+  /v1/provision-status/{uuid}:
+    get:
+      tags:
+        - Healthcheck
+      parameters:
+        - $ref: '#/components/parameters/uuid'
+      responses:
+        '200':
+          description: The announcement for the given uuid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/scheduling-info'
+        '404':
+          $ref: '#/components/responses/404'
+
 components:
   responses:
-    '400':
-      description: "Bad Request. This could be because: * One of the required parameters/properties are missing or is empty <br> * Length of input is exceeding maximum length <br> (See a possible detailed error message in the in the response.)"
-    '401':
-      description: "Unauthorized. This could be because: <br> * The calling system has not been properly authenticated."
-    '403':
-      description: "Forbidden. This could be because: <br> * The requested information does not belong the organisation of the user <br> * The calling user does not have the required roles"
+    '204':
+      description: 'No Content.'
+    '404':
+      description: "Not Found. The requested resource was not found."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/basic-error'
+
+  parameters:
+    uuid:
+      name: uuid
+      in: path
+      description: The uuid for the resource in question.
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 50edcf81-d36f-4246-a4af-168ba37fd57b
+
+
   schemas:
     healthcheckResponse:
       type: object
@@ -91,4 +122,39 @@ components:
           description: Response time from service.
           type: integer
           format: int64
+
+    scheduling-info:
+      type: object
+      required:
+        - provision_status
+      properties:
+        provision_status:
+          description: Provision status
+          type: string
+
+    basic-error:
+      type: object
+      required:
+        - error
+        - path
+        - status
+        - status_text
+        - timestamp
+      properties:
+        error:
+          description: Error message.
+          type: string
+        path:
+          description: Path
+          type: string
+        status:
+          description: HTTP status code
+          type: integer
+        status_text:
+          description: HTTP status text
+          type: string
+        timestamp:
+          description: Time of error
+          type: string
+          format: date-time
 

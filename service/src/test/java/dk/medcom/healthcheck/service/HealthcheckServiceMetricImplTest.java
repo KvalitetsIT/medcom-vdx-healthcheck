@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.times;
@@ -31,7 +32,7 @@ public class HealthcheckServiceMetricImplTest {
         var videoApi = createStatus(20L);
         var shortLink = createStatus(30L);
         var accessTokenForVideoApi = createStatus(40L);
-        HealthcheckResult healthcheckResult = new HealthcheckResult(sts, videoApi, shortLink, null, accessTokenForVideoApi);
+        HealthcheckResult healthcheckResult = new HealthcheckResult(sts, videoApi, shortLink, null, accessTokenForVideoApi, UUID.randomUUID());
 
         var stsTimer = Mockito.mock(Timer.class);
         var videoApiTimer = Mockito.mock(Timer.class);

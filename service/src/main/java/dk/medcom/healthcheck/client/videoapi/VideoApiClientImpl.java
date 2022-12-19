@@ -4,6 +4,7 @@ import dk.medcom.healthcheck.client.videoapi.model.CreateMeeting;
 import dk.medcom.healthcheck.client.videoapi.model.Meeting;
 import dk.medcom.healthcheck.client.videoapi.model.PatchMeeting;
 import dk.medcom.healthcheck.client.Result;
+import dk.medcom.healthcheck.client.videoapi.model.SchedulingInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -64,6 +65,25 @@ public class VideoApiClientImpl implements VideoApiClient {
         catch(Exception e) {
             logger.error("Error calling Video API.", e);
             return new Result<>(false, e.getMessage(), System.currentTimeMillis()-start, null);
+        }
+    }
+
+    @Override
+    public Result<SchedulingInfo> readSchedulingInfo(String accessToken, UUID meetingUuid) {
+        long start = System.currentTimeMillis();
+        try {
+            var schedulingInfo = webClient.get()
+                    .uri("/scheduling-info/{uuid}", meetingUuid)
+                    .header("Authorization", "Holder-of-key " + accessToken)
+                    .retrieve()
+                    .bodyToMono(SchedulingInfo.class)
+                    .block();
+
+            return new Result(System.currentTimeMillis()-start, schedulingInfo);
+        }
+        catch(Exception e) {
+            logger.error("Error reading scheduling info from VideoAPI.", e);
+            return new Result(false, e.getMessage(), System.currentTimeMillis()-start, null);
         }
     }
 }

@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class HealthcheckServiceMetricImpl implements HealthcheckService {
@@ -37,6 +38,16 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
         recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi);
 
         return health;
+    }
+
+    @Override
+    public HealthcheckResult checkHealthWithProvisioning() {
+        return null;
+    }
+
+    @Override
+    public String getProvisionStatus(UUID uuid) {
+        return null;
     }
 
     private void recordTimeIfPositiveResponse(Status status, Timer timer) {

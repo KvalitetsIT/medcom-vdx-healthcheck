@@ -49,6 +49,21 @@ public class HtmlController {
         return response;
     }
 
+    @RequestMapping(path = "/execute-provision")
+    public ModelAndView executeProvision() {
+        logger.info("Showing main page.");
+
+        var result = healthcheckService.checkHealthWithProvisioning();
+
+        var response = new ModelAndView();
+        response.setViewName("result-provision");
+        response.addObject("allOk", allOk(result));
+        response.addObject("status", createStatus(result));
+        response.addObject("uuid", result.meetingUuid());
+
+        return response;
+    }
+
     private List<Status> createStatus(HealthcheckResult result) {
         var l = new ArrayList<>(Arrays.asList(
                 createStatus("Get token from STS", result.sts()),
