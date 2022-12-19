@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -28,7 +30,7 @@ public class HealthcheckControllerTest {
         Status videoStatus = new Status(false, "another msg", 20L);
         Status shortLinkStatus = new Status(true, null, 30L);
         Status accessTokenStatus = new Status(false, "Some msg", 40L);
-        var serviceResponse = new HealthcheckResult(stsStatus, videoStatus, shortLinkStatus, null, accessTokenStatus);
+        var serviceResponse = new HealthcheckResult(stsStatus, videoStatus, shortLinkStatus, null, accessTokenStatus, UUID.randomUUID());
 
         Mockito.when(healthcheckService.checkHealth()).thenReturn(serviceResponse);
 

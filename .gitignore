@@ -33,3 +33,6 @@ target
 .project
 .settings/
 .classpath
+
+client.jks
+sts.cer
