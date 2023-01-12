@@ -20,6 +20,8 @@ public class ServiceStarter {
         System.setProperty("STS_STORE", "client.jks");
         System.setProperty("HEALTHCHECK_RATE", "PT5M");
 
+        System.setProperty("LOG_LEVEL", "DEBUG");
+
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }
 }

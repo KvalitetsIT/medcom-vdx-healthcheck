@@ -2,6 +2,7 @@ package dk.medcom.healthcheck.service;
 
 import dk.medcom.healthcheck.configuration.TimerConfiguration;
 import dk.medcom.healthcheck.service.model.HealthcheckResult;
+import dk.medcom.healthcheck.service.model.ProvisionStatus;
 import dk.medcom.healthcheck.service.model.Status;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -46,7 +47,7 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
     }
 
     @Override
-    public String getProvisionStatus(UUID uuid) {
+    public ProvisionStatus getProvisionStatus(UUID uuid) {
         return null;
     }
 

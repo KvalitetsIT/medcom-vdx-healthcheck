@@ -13,35 +13,82 @@ table {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>VDX Health Check</title>
+    <script th:inline="javascript">
+        let fetchCount = 0;
+        async function getProvisionStatus() {
+            let response = await fetch('/v1/provision-status/[(${uuid})]');
+            let data = await response.json();
+            return data;
+        }
+
+        async function updateProvisionStatus() {
+            let provisionStatus = document.getElementById('provisionStatus');
+            let timeToProvision = document.getElementById('timeToProvision');
+            let result = document.getElementById('result');
+            let checking = document.getElementById('checking');
+
+            while(fetchCount <= 24) {
+                await new Promise(r => setTimeout(r, 5000));
+                if(provisionStatus.textContent !== 'PROVISIONED_OK') {
+                    getProvisionStatus().then(data => {
+                        provisionStatus.textContent = data.provision_status;
+                        timeToProvision.textContent = data.time_to_provision + " ms";
+
+                        if(data.provision_status === 'PROVISIONED_OK') {
+
+                            result.removeAttribute('hidden');
+                            checking.setAttribute('hidden', 'hidden');
+                        }
+                    });
+                }
+
+                fetchCount++;
+            }
+
+            result.removeAttribute('hidden');
+            checking.setAttribute('hidden', 'hidden');
+        }
+    </script>
 </head>
-<body>
+<body onload="updateProvisionStatus()">
 
 <h1>VDX Health check</h1>
 
-<p>Executed at: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm zzz')}" /></p>
+<div id="checking">
+    <p>Checking health of services. This can take up to 2 minutes. Please do not refresh page.</p>
+</div>
 
-<p>All Healthy:
-    <span th:if="${allOk}" style="color:#00FF00" th:text="Yes" />
-    <span th:if="${!allOk}" style="color:#FF0000" th:text="No" />
-</p>
+<div id="result" hidden="hidden">
+    <p>Executed at: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm zzz')}" /></p>
 
-<table>
-    <tr>
-        <th>Service</th>
-        <th>Response time</th>
-        <th>Status</th>
-        <th>Message</th>
-    </tr>
-    <tr th:each="status : ${status}">
-        <td th:text="${status.name}" />
-        <td th:text="${status.responseTime} + 'ms'" />
-        <td th:text="${status.ok? 'OK' : 'Not OK'}" />
-        <td th:text="${status.message}" />
-    </tr>
-</table>
+    <p>All Healthy:
+        <span th:if="${allOk}" style="color:#00FF00" th:text="Yes" />
+        <span th:if="${!allOk}" style="color:#FF0000" th:text="No" />
+    </p>
 
-<p>Refresh to execute again.</p>
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Response time</th>
+            <th>Status</th>
+            <th>Message</th>
+        </tr>
+        <tr th:each="status : ${status}">
+            <td th:text="${status.name}" />
+            <td th:text="${status.responseTime} + 'ms'" />
+            <td th:text="${status.ok? 'OK' : 'Not OK'}" />
+            <td th:text="${status.message}" />
+        </tr>
+        <tr>
+            <td>Time to provision meeting</td>
+            <td id="timeToProvision"></td>
+            <td id="provisionStatus"></td>
+            <td></td>
+        </tr>
+    </table>
 
+    <p>Refresh to execute again.</p>
+</div>
 </body>
 </html>
 

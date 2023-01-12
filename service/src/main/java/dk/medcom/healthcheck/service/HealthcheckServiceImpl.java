@@ -5,6 +5,7 @@ import dk.medcom.healthcheck.client.security.StsClient;
 import dk.medcom.healthcheck.client.security.TokenEncoder;
 import dk.medcom.healthcheck.client.security.model.AccessToken;
 import dk.medcom.healthcheck.service.model.HealthcheckResult;
+import dk.medcom.healthcheck.service.model.ProvisionStatus;
 import dk.medcom.healthcheck.service.model.Status;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
@@ -46,7 +47,7 @@ public class HealthcheckServiceImpl implements HealthcheckService {
     }
 
     @Override
-    public String getProvisionStatus(UUID uuid) {
+    public ProvisionStatus getProvisionStatus(UUID uuid) {
         var stsToken = stsClient.requestToken();
         var accessToken = getAccessToken(stsToken);
 
@@ -57,10 +58,14 @@ public class HealthcheckServiceImpl implements HealthcheckService {
                 videoApiClient.closeMeeting(accessToken.result().getAccessToken().toString(), uuid);
             }
 
-            return schedulingInfo.result().provisionStatus();
+            var timeToProvision = 0L;
+            if(schedulingInfo.result().provisionTimestamp() != null) {
+                timeToProvision = (schedulingInfo.result().provisionTimestamp().toEpochSecond()-schedulingInfo.result().createdTime().toEpochSecond())*1000;
+            }
+            return new ProvisionStatus(schedulingInfo.result().provisionStatus(), timeToProvision);
         }
         else {
-            return "ERROR GETTING STATUS";
+            return new ProvisionStatus("ERROR GETTING STATUS", 0);
         }
     }
 

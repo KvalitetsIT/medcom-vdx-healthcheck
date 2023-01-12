@@ -127,10 +127,15 @@ components:
       type: object
       required:
         - provision_status
+        - time_to_provision
       properties:
         provision_status:
           description: Provision status
           type: string
+        time_to_provision:
+          description: Time to provision room in Pexip. Value is in ms.
+          type: integer
+          format: int64
 
     basic-error:
       type: object
