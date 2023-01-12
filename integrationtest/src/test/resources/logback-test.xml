@@ -7,7 +7,7 @@
     </appender>
 
 
-    <logger name="dk.kvalitetsit" level="debug" additivity="false">
+    <logger name="dk.medcom" level="debug" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 

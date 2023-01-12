@@ -14,6 +14,7 @@ public class TimerConfiguration {
     public static final String SERVICE_VIDEO_API = "videoAPi";
     public static final String SERVICE_SHORT_LINK = "shortLink";
     public static final String SERVICE_ACCESS_TOKEN_FOR_VIDEO_API = "accessTokenForVideoApi";
+    public static final String PROVISION_ROOM = "provisionRoom";
 
     @Bean
     public MeterBinder stsTimer() {
