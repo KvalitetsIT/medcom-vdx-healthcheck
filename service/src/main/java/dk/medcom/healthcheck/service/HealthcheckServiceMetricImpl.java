@@ -17,6 +17,8 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
     private final HealthcheckService healthcheckService;
     private final MeterRegistry meterRegistry;
 
+    private final int maxProvisionCheckTime = 120;
+
     public HealthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
         this.healthcheckService = healthcheckService;
         this.meterRegistry = meterRegistry;
@@ -30,15 +32,45 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
         var videoApiTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_VIDEO_API);
         var shortLinkTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_SHORT_LINK);
         var accessTokenForVideoApi = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
+        var provisionMeetingRoom = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.PROVISION_ROOM);
 
         var health = healthcheckService.checkHealth();
+
+        int runTime = 0;
+        ProvisionStatus provisionStatus = null;
+        while(runTime < maxProvisionCheckTime) {
+            provisionStatus = healthcheckService.getProvisionStatus(health.meetingUuid());
+
+            if(provisionStatus.status().equals("PROVISIONED_OK")) {
+                logger.debug("Provision status OK. Breaking loop.");
+                break;
+            }
+
+            try {
+                logger.debug("Sleeping - waiting to check provision status again.");
+                runTime += 5;
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+
+        logger.debug("Done checking for provision status.");
 
         recordTimeIfPositiveResponse(health.sts(), stsTimer);
         recordTimeIfPositiveResponse(health.videoAPi(), videoApiTimer);
         recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer);
         recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi);
+        recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom);
 
         return health;
+    }
+
+    private void recordTimeIfProvisionedOk(ProvisionStatus provisionStatus, Timer timer) {
+        if(provisionStatus != null && provisionStatus.timeToProvision() > 0) {
+            logger.debug("Recording metric in timer.");
+            timer.record(provisionStatus.timeToProvision(), TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
