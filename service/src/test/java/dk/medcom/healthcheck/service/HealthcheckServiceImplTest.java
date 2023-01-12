@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -114,13 +115,15 @@ public class HealthcheckServiceImplTest {
         var accessTokenResponse = new Result<>(20L, accessToken);
         Mockito.when(authorizationClient.authorize(token)).thenReturn(accessTokenResponse);
 
-        var schedulingInfo = new SchedulingInfo(expectedStatus);
+        var now = OffsetDateTime.now();
+        var schedulingInfo = new SchedulingInfo(expectedStatus, now.minusMinutes(10), null);
         var videoApiResponse = new Result<>(30L, schedulingInfo);
         Mockito.when(videoApiClient.readSchedulingInfo(Mockito.eq(accessToken.getAccessToken().toString()), Mockito.any())).thenReturn(videoApiResponse);
 
         var result = healthcheckService.getProvisionStatus(input);
         assertNotNull(result);
-        assertEquals(expectedStatus, result);
+        assertEquals(expectedStatus, result.status());
+        assertEquals(0, result.timeToProvision());
 
         Mockito.verify(stsClient, times(1)).requestToken();
         Mockito.verify(tokenEncoder, times(1)).encode(stsResponse.result());
@@ -145,13 +148,15 @@ public class HealthcheckServiceImplTest {
         var accessTokenResponse = new Result<>(20L, accessToken);
         Mockito.when(authorizationClient.authorize(token)).thenReturn(accessTokenResponse);
 
-        var schedulingInfo = new SchedulingInfo(expectedStatus);
+        var now = OffsetDateTime.now();
+        var schedulingInfo = new SchedulingInfo(expectedStatus, now.minusMinutes(10), now);
         var schedulingInfoResponse = new Result<>(30L, schedulingInfo);
         Mockito.when(videoApiClient.readSchedulingInfo(Mockito.eq(accessToken.getAccessToken().toString()), Mockito.any())).thenReturn(schedulingInfoResponse);
 
         var result = healthcheckService.getProvisionStatus(input);
         assertNotNull(result);
-        assertEquals(expectedStatus, result);
+        assertEquals(expectedStatus, result.status());
+        assertEquals(600000, result.timeToProvision());
 
         Mockito.verify(stsClient, times(1)).requestToken();
         Mockito.verify(tokenEncoder, times(1)).encode(stsResponse.result());
@@ -177,13 +182,15 @@ public class HealthcheckServiceImplTest {
         var accessTokenResponse = new Result<>(20L, accessToken);
         Mockito.when(authorizationClient.authorize(token)).thenReturn(accessTokenResponse);
 
-        var schedulingInfo = new SchedulingInfo(apiStatus);
+        var now = OffsetDateTime.now();
+        var schedulingInfo = new SchedulingInfo(apiStatus, now.minusMinutes(10), now);
         var videoApiResponse = new Result<>(false, "some_message", 30L, schedulingInfo);
         Mockito.when(videoApiClient.readSchedulingInfo(Mockito.eq(accessToken.getAccessToken().toString()), Mockito.any())).thenReturn(videoApiResponse);
 
         var result = healthcheckService.getProvisionStatus(input);
         assertNotNull(result);
-        assertEquals("ERROR GETTING STATUS", result);
+        assertEquals("ERROR GETTING STATUS", result.status());
+        assertEquals(0, result.timeToProvision());
 
         Mockito.verify(stsClient, times(1)).requestToken();
         Mockito.verify(tokenEncoder, times(1)).encode(stsResponse.result());

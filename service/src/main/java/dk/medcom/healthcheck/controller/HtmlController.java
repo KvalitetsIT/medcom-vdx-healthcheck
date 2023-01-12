@@ -34,29 +34,14 @@ public class HtmlController {
         return response;
     }
 
-
     @RequestMapping(path = "/execute")
     public ModelAndView execute() {
-        logger.info("Showing main page.");
-
-        var result = healthcheckService.checkHealth();
-
-        var response = new ModelAndView();
-        response.setViewName("result");
-        response.addObject("allOk", allOk(result));
-        response.addObject("status", createStatus(result));
-
-        return response;
-    }
-
-    @RequestMapping(path = "/execute-provision")
-    public ModelAndView executeProvision() {
-        logger.info("Showing main page.");
+        logger.info("Executing health check test.");
 
         var result = healthcheckService.checkHealthWithProvisioning();
 
         var response = new ModelAndView();
-        response.setViewName("result-provision");
+        response.setViewName("result");
         response.addObject("allOk", allOk(result));
         response.addObject("status", createStatus(result));
         response.addObject("uuid", result.meetingUuid());
@@ -83,7 +68,6 @@ public class HtmlController {
 
         return l;
     }
-
 
     private Status createStatus(String name, dk.medcom.healthcheck.service.model.Status status) {
         return new Status(name, status.ok(), status.responseTime(), status.message());

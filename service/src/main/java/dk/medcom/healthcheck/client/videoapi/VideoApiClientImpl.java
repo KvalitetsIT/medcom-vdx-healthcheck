@@ -79,6 +79,7 @@ public class VideoApiClientImpl implements VideoApiClient {
                     .bodyToMono(SchedulingInfo.class)
                     .block();
 
+            logger.debug(schedulingInfo.toString());
             return new Result(System.currentTimeMillis()-start, schedulingInfo);
         }
         catch(Exception e) {

@@ -44,7 +44,10 @@ public class HealthcheckController implements HealthcheckApi {
 
     public ResponseEntity<SchedulingInfo> v1ProvisionStatusUuidGet(UUID uuid) {
         logger.debug("Getting provision status for {}.", uuid);
-        return ResponseEntity.ok(new SchedulingInfo().provisionStatus(healthcheckService.getProvisionStatus(uuid)));
+
+        var result = healthcheckService.getProvisionStatus(uuid);
+
+        return ResponseEntity.ok(new SchedulingInfo().provisionStatus(result.status()).timeToProvision(result.timeToProvision()));
     }
 
     private Status createStatus(dk.medcom.healthcheck.service.model.Status serviceStatus) {
