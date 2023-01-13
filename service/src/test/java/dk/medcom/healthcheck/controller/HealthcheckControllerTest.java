@@ -34,7 +34,7 @@ public class HealthcheckControllerTest {
 
         Mockito.when(healthcheckService.checkHealth()).thenReturn(serviceResponse);
 
-        var result =healthcheckController.v1HealthcheckGet();
+        var result = healthcheckController.v1HealthcheckGet();
 
         assertNotNull(result);
         var healthCheckResponse = result.getBody();
