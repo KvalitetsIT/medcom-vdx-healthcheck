@@ -36,6 +36,11 @@ public class TimerConfiguration {
         return createTimer(TIMER_NAME, SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
     }
 
+    @Bean
+    public MeterBinder provisionTimer() {
+        return createTimer(TIMER_NAME, PROVISION_ROOM);
+    }
+
     private MeterBinder createTimer(String name, String service) {
         return registry -> Timer.builder(name)
                 .distributionStatisticExpiry(Duration.ofMinutes(30L))
