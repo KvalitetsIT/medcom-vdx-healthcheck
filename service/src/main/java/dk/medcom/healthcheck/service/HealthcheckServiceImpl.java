@@ -97,6 +97,7 @@ public class HealthcheckServiceImpl implements HealthcheckService {
             createMeeting.setEndTime(OffsetDateTime.now().plusHours(1));
             createMeeting.setStartTime(OffsetDateTime.now());
             createMeeting.setDescription("This is a meeting created by healthcheck service at %s".formatted(LocalDateTime.now()));
+            createMeeting.setProjectCode("healthcheck");
             return videoApiClient.createMeeting(accessToken.result().getAccessToken().toString(), createMeeting);
         });
 
