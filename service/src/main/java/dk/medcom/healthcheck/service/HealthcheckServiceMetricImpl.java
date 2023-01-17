@@ -9,10 +9,9 @@ import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class HealthcheckServiceMetricImpl implements HealthcheckService {
+public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
     private static final Logger logger = LoggerFactory.getLogger(HealthcheckServiceMetricImpl.class);
     private final HealthcheckService healthcheckService;
     private final MeterRegistry meterRegistry;
@@ -34,10 +33,11 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
         var accessTokenForVideoApi = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
         var provisionMeetingRoom = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.PROVISION_ROOM);
 
-        var health = healthcheckService.checkHealth();
+        var health = healthcheckService.checkHealthWithProvisioning();
 
         int runTime = 0;
         ProvisionStatus provisionStatus = null;
+
         while(runTime < maxProvisionCheckTime) {
             provisionStatus = healthcheckService.getProvisionStatus(health.meetingUuid());
 
@@ -71,16 +71,6 @@ public class HealthcheckServiceMetricImpl implements HealthcheckService {
             logger.debug("Recording metric in timer.");
             timer.record(provisionStatus.timeToProvision(), TimeUnit.MILLISECONDS);
         }
-    }
-
-    @Override
-    public HealthcheckResult checkHealthWithProvisioning() {
-        return null;
-    }
-
-    @Override
-    public ProvisionStatus getProvisionStatus(UUID uuid) {
-        return null;
     }
 
     private void recordTimeIfPositiveResponse(Status status, Timer timer) {

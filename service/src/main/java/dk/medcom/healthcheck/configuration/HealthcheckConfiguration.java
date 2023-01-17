@@ -8,6 +8,7 @@ import dk.medcom.healthcheck.client.videoapi.VideoApiClientImpl;
 import dk.medcom.healthcheck.service.HealthcheckService;
 import dk.medcom.healthcheck.service.HealthcheckServiceImpl;
 import dk.medcom.healthcheck.service.HealthcheckServiceMetricImpl;
+import dk.medcom.healthcheck.service.HealthcheckServiceMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.netty.handler.ssl.SslContextBuilder;
 import org.apache.cxf.Bus;
@@ -43,7 +44,7 @@ public class HealthcheckConfiguration {
     }
 
     @Bean
-    public HealthcheckService healthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
+    public HealthcheckServiceMetrics healthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
         return new HealthcheckServiceMetricImpl(healthcheckService, meterRegistry);
     }
 

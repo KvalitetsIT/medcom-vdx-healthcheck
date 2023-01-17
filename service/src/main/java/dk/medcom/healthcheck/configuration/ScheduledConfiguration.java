@@ -1,6 +1,6 @@
 package dk.medcom.healthcheck.configuration;
 
-import dk.medcom.healthcheck.service.HealthcheckService;
+import dk.medcom.healthcheck.service.HealthcheckServiceMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Configuration
 public class ScheduledConfiguration {
     @Autowired
-    private HealthcheckService healthcheckServiceMetricImpl;
+    private HealthcheckServiceMetrics healthcheckServiceMetricImpl;
 
     @Autowired
     private MeterRegistry meterRegistry;
