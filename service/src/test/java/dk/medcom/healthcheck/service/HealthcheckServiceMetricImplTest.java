@@ -48,11 +48,11 @@ public class HealthcheckServiceMetricImplTest {
         Mockito.when(meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API)).thenReturn(accessTokenForVideoApiTimer);
         Mockito.when(meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.PROVISION_ROOM)).thenReturn(provisionRoomTimer);
 
-        Mockito.when(mockedHealthcheckService.checkHealth()).thenReturn(healthcheckResult);
+        Mockito.when(mockedHealthcheckService.checkHealthWithProvisioning()).thenReturn(healthcheckResult);
         Mockito.when(mockedHealthcheckService.getProvisionStatus(healthcheckResult.meetingUuid())).thenReturn(provisionStatus);
         service.checkHealth();
 
-        Mockito.verify(mockedHealthcheckService, times(1)).checkHealth();
+        Mockito.verify(mockedHealthcheckService, times(1)).checkHealthWithProvisioning();
         Mockito.verify(stsTimer, times(1)).record(sts.responseTime(), TimeUnit.MILLISECONDS);
         Mockito.verify(videoApiTimer, times(1)).record(videoApi.responseTime(), TimeUnit.MILLISECONDS);
         Mockito.verify(shortLinkTimer, times(1)).record(shortLink.responseTime(), TimeUnit.MILLISECONDS);
