@@ -31,7 +31,7 @@ table {
 
             while(fetchCount <= 24) {
                 await new Promise(r => setTimeout(r, 5000));
-                if(provisionStatus.textContent !== 'PROVISIONED_OK') {
+                if(provisionStatus.textContent !== 'PROVISIONED_OK' || (smsStatus.textContent !== 'SMS NOT FOUND OR NOT SEND' && smsStatus.textContent !== 'Delivered')) {
                     getProvisionStatus().then(data => {
                         provisionStatus.textContent = data.scheduling_info.provision_status;
                         timeToProvision.textContent = data.scheduling_info.time_to_provision + " ms";
