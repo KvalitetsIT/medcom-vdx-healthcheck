@@ -1,22 +1,25 @@
 package dk.medcom.healthcheck.service;
 
+import dk.medcom.healthcheck.client.Result;
 import dk.medcom.healthcheck.client.security.AuthorizationClient;
 import dk.medcom.healthcheck.client.security.StsClient;
 import dk.medcom.healthcheck.client.security.TokenEncoder;
 import dk.medcom.healthcheck.client.security.model.AccessToken;
-import dk.medcom.healthcheck.service.model.HealthcheckResult;
-import dk.medcom.healthcheck.service.model.ProvisionStatus;
-import dk.medcom.healthcheck.service.model.Status;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
+import dk.medcom.healthcheck.client.sms.SmsClient;
+import dk.medcom.healthcheck.client.sms.model.SmsRequest;
+import dk.medcom.healthcheck.client.sms.model.SmsResponse;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
 import dk.medcom.healthcheck.client.videoapi.model.CreateMeeting;
-import dk.medcom.healthcheck.client.Result;
+import dk.medcom.healthcheck.service.model.*;
 import org.apache.cxf.ws.security.tokenstore.SecurityToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -27,30 +30,59 @@ public class HealthcheckServiceImpl implements HealthcheckService {
     private final AuthorizationClient authorizationClient;
     private final VideoApiClient videoApiClient;
     private final TokenEncoder tokenEncoder;
+    private final AuthorizationClient smsAuthorizationClient;
+    private final SmsClient smsClient;
 
-    public HealthcheckServiceImpl(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient, TokenEncoder tokenEncoder) {
+    public HealthcheckServiceImpl(StsClient stsClient,
+                                  ShortLinkClient shortLinkClient,
+                                  AuthorizationClient videoApiAuthorizationClient,
+                                  VideoApiClient videoApiClient,
+                                  TokenEncoder tokenEncoder,
+                                  AuthorizationClient smsAuthorizationClient,
+                                  SmsClient smsClient) {
         this.stsClient = stsClient;
         this.shortLinkClient = shortLinkClient;
-        this.authorizationClient = authorizationClient;
+        this.authorizationClient = videoApiAuthorizationClient;
         this.videoApiClient = videoApiClient;
         this.tokenEncoder = tokenEncoder;
+        this.smsAuthorizationClient = smsAuthorizationClient;
+        this.smsClient = smsClient;
     }
 
     @Override
     public HealthcheckResult checkHealth() {
-        return checkHealth(true);
+        return checkHealth(true, null);
     }
 
     @Override
     public HealthcheckResult checkHealthWithProvisioning() {
-        return checkHealth(false);
+        return checkHealth(false, null);
+    }
+
+    @Override
+    public HealthcheckResult checkHealthWithProvisioningAndSms(String phone) {
+        return checkHealth(false, phone);
+    }
+
+    @Override
+    public MeetingStatus getStatus(UUID uuid) {
+        var stsToken = stsClient.requestToken();
+
+        var provisionStatus = provisionStatus(stsToken, uuid);
+        var smsStatus = smsStatus(stsToken, uuid);
+
+        return new MeetingStatus(provisionStatus, smsStatus);
     }
 
     @Override
     public ProvisionStatus getProvisionStatus(UUID uuid) {
         var stsToken = stsClient.requestToken();
-        var accessToken = getAccessToken(stsToken);
 
+        return provisionStatus(stsToken, uuid);
+    }
+
+    private ProvisionStatus provisionStatus(Result<SecurityToken> stsToken, UUID uuid) {
+        Result<AccessToken> accessToken = getVideoApiAccessToken(stsToken);
         var schedulingInfo = callIfOk(accessToken, () -> videoApiClient.readSchedulingInfo(accessToken.result().getAccessToken().toString(), uuid));
 
         if(schedulingInfo.ok()) {
@@ -69,8 +101,30 @@ public class HealthcheckServiceImpl implements HealthcheckService {
         }
     }
 
-    private Result<AccessToken> getAccessToken(Result<SecurityToken> securityToken) {
-        var accessToken = callIfOk(securityToken, () -> {
+    private SmsStatus smsStatus(Result<SecurityToken> stsToken, UUID uuid) {
+        try {
+            Result<AccessToken> accessToken = getSmsApiAccessToken(stsToken);
+            var smsStatus = callIfOk(accessToken, () -> smsClient.getStatus(accessToken.result().getAccessToken().toString(), uuid));
+
+            if(smsStatus.ok()) {
+                if(smsStatus.result().size() != 1) {
+                    return new SmsStatus("UNABLE TO READ SMS STATUS.");
+                }
+
+                return new SmsStatus(smsStatus.result().get(0).getStatus());
+            }
+            else {
+                return new SmsStatus("ERROR GETTING STATUS");
+            }
+        }
+        catch(WebClientResponseException.NotFound e) {
+            return new SmsStatus("SMS NOT FOUND OR NOT SEND");
+        }
+    }
+
+
+    private Result<AccessToken> getVideoApiAccessToken(Result<SecurityToken> securityToken) {
+        return callIfOk(securityToken, () -> {
             logger.info("Base64 encode token from STS.");
             var encodedToken = tokenEncoder.encode(securityToken.result());
 
@@ -78,16 +132,25 @@ public class HealthcheckServiceImpl implements HealthcheckService {
             logger.info("Requesting access token from service..");
             return authorizationClient.authorize(encodedToken);
         });
-
-        return accessToken;
     }
 
-    private HealthcheckResult checkHealth(boolean closeMeeting) {
+    private Result<AccessToken> getSmsApiAccessToken(Result<SecurityToken> securityToken) {
+        return callIfOk(securityToken, () -> {
+            logger.info("Base64 encode token from STS.");
+            var encodedToken = tokenEncoder.encode(securityToken.result());
+
+            // Request access token using received SAML token.
+            logger.info("Requesting access token from service..");
+            return smsAuthorizationClient.authorize(encodedToken);
+        });
+    }
+
+    private HealthcheckResult checkHealth(boolean closeMeeting, String phone) {
         logger.info("Executing health check.");
 
         logger.info("About to call STS to get token.");
         var stsToken = stsClient.requestToken();
-        var accessToken = getAccessToken(stsToken);
+        var accessToken = getVideoApiAccessToken(stsToken);
 
         UUID meetingUuid = null;
         var createMeetingResponse = callIfOk(accessToken, () -> {
@@ -108,6 +171,17 @@ public class HealthcheckServiceImpl implements HealthcheckService {
         logger.info("Call short link service.");
         var shortLinkResponse = callIfOk(createMeetingResponse, () -> shortLinkClient.getShortLink(createMeetingResponse.result().getShortLink()));
 
+        Result<SmsResponse> smsResponse = null;
+        if(phone != null) {
+            smsResponse = callIfOk(createMeetingResponse, () -> {
+                var smsRequest = new SmsRequest();
+                smsRequest.setMessage("Test message from health check service");
+                smsRequest.setTo(phone);
+
+                return smsClient.sendSms(accessToken.result().getAccessToken().toString(), createMeetingResponse.result().getUuid(), smsRequest);
+            });
+        }
+
         if(closeMeeting) {
             // Closing meeting again by setting end time to now().
             callIfOk(createMeetingResponse, () -> videoApiClient.closeMeeting(accessToken.result().getAccessToken().toString(), createMeetingResponse.result().getUuid()));
@@ -116,7 +190,7 @@ public class HealthcheckServiceImpl implements HealthcheckService {
         return new HealthcheckResult(createStatus(stsToken),
                 createStatus(createMeetingResponse),
                 createStatus(shortLinkResponse),
-                null,
+                smsResponse == null ? Optional.empty() : Optional.of(createStatus(smsResponse)),
                 createStatus(accessToken),
                 meetingUuid);
     }
