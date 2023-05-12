@@ -40,7 +40,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<testcontainers.version>1.18.0</testcontainers.version>
-		<spring-prometheus-app-info-version>1.2.0</spring-prometheus-app-info-version>
+		<spring-prometheus-app-info-version>2.0.2</spring-prometheus-app-info-version>
 		<spring-request-id-logger-version>1.2.1</spring-request-id-logger-version>
 		<jacoco-version>0.8.10</jacoco-version>
 		<org-apache-cxf-version>3.5.5</org-apache-cxf-version>
