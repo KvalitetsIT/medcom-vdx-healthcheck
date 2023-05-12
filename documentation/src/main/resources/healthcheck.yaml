@@ -40,7 +40,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/healthcheckResponse'
 
-  /v1/provision-status/{uuid}:
+  /v1/status/{uuid}:
     get:
       tags:
         - Healthcheck
@@ -52,7 +52,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/scheduling-info'
+                $ref: '#/components/schemas/meeting-status'
         '404':
           $ref: '#/components/responses/404'
 
@@ -122,6 +122,23 @@ components:
           description: Response time from service.
           type: integer
           format: int64
+
+    meeting-status:
+      type: object
+      properties:
+        scheduling_info:
+          $ref: '#/components/schemas/scheduling-info'
+        sms_info:
+          $ref: '#/components/schemas/sms-info'
+
+    sms-info:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          description: Sms Status
+          type: string
 
     scheduling-info:
       type: object

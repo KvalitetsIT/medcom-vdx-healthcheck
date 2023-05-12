@@ -3,6 +3,8 @@ package dk.medcom.healthcheck.configuration;
 import dk.medcom.healthcheck.client.security.*;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClientImpl;
+import dk.medcom.healthcheck.client.sms.SmsClient;
+import dk.medcom.healthcheck.client.sms.SmsClientImpl;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClient;
 import dk.medcom.healthcheck.client.videoapi.VideoApiClientImpl;
 import dk.medcom.healthcheck.service.HealthcheckService;
@@ -39,8 +41,13 @@ public class HealthcheckConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(HealthcheckConfiguration.class);
 
     @Bean
-    public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient authorizationClient, VideoApiClient videoApiClient) {
-        return new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, new TokenEncoder());
+    public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient videpApiAuthorizationClient, VideoApiClient videoApiClient, AuthorizationClient smsAuthorizationClient, SmsClient smsClient) {
+        return new HealthcheckServiceImpl(stsClient, shortLinkClient, videpApiAuthorizationClient, videoApiClient, new TokenEncoder(), smsAuthorizationClient, smsClient);
+    }
+
+    @Bean
+    public SmsClient smsClient(WebClient.Builder webClientBuilder, @Value("${SMS_ENDPOINT}") String smsApiEndpoint, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        return new SmsClientImpl(enhanceForMTls(webClientBuilder, keyStore, keystorePassword), smsApiEndpoint);
     }
 
     @Bean
@@ -75,7 +82,12 @@ public class HealthcheckConfiguration {
     }
 
     @Bean
-    public AuthorizationClient authorizationClient(@Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, WebClient.Builder webClientBuilder, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    public AuthorizationClient videpApiAuthorizationClient(@Value("${VIDEOAPI_ENDPOINT}") String videoApiEndpoint, WebClient.Builder webClientBuilder, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        return new AuthorizationClientImpl(videoApiEndpoint + "/token", enhanceForMTls(webClientBuilder, keyStore, keystorePassword));
+    }
+
+    @Bean
+    public AuthorizationClient smsAuthorizationClient(@Value("${SMS_ENDPOINT}") String videoApiEndpoint, WebClient.Builder webClientBuilder, KeyStore keyStore, @Value("${STS_STORE_PASSWORD}")String keystorePassword) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         return new AuthorizationClientImpl(videoApiEndpoint + "/token", enhanceForMTls(webClientBuilder, keyStore, keystorePassword));
     }
 

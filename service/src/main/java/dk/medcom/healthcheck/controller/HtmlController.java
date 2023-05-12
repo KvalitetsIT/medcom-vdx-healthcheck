@@ -1,11 +1,15 @@
 package dk.medcom.healthcheck.controller;
 
+import dk.medcom.healthcheck.controller.model.HealthCheckModel;
 import dk.medcom.healthcheck.controller.model.Status;
 import dk.medcom.healthcheck.service.HealthcheckService;
 import dk.medcom.healthcheck.service.model.HealthcheckResult;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,11 +38,18 @@ public class HtmlController {
         return response;
     }
 
-    @RequestMapping(path = "/execute")
-    public ModelAndView execute() {
+    @PostMapping(path = "/execute")
+    public ModelAndView execute(@ModelAttribute HealthCheckModel model) {
         logger.info("Executing health check test.");
 
-        var result = healthcheckService.checkHealthWithProvisioning();
+        HealthcheckResult result;
+
+        if(model != null && !StringUtils.isAllEmpty(model.getPhone())) {
+            result = healthcheckService.checkHealthWithProvisioningAndSms(model.getPhone().trim());
+        }
+        else {
+            result = healthcheckService.checkHealthWithProvisioning();
+        }
 
         var response = new ModelAndView();
         response.setViewName("result");
@@ -55,6 +66,10 @@ public class HtmlController {
                 createStatus("Create access token for VideoAPI", result.accessTokenForVideoApi()),
                 createStatus("Create meeting in VideoAPI", result.videoAPi()),
                 createStatus("Access shortlink page", result.shortLink())));
+
+        if(result.sms().isPresent()) {
+            l.add(createStatus("Send SMS", result.sms().get()));
+        }
 
         l.add(new Status("Total",
                 l.stream().allMatch(Status::ok),

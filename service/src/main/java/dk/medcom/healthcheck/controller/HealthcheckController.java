@@ -2,9 +2,7 @@ package dk.medcom.healthcheck.controller;
 
 import dk.medcom.healthcheck.service.HealthcheckService;
 import org.openapitools.api.HealthcheckApi;
-import org.openapitools.model.HealthcheckResponse;
-import org.openapitools.model.SchedulingInfo;
-import org.openapitools.model.Status;
+import org.openapitools.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -42,12 +40,18 @@ public class HealthcheckController implements HealthcheckApi {
         return ResponseEntity.ok(healthcheckResponse);
     }
 
-    public ResponseEntity<SchedulingInfo> v1ProvisionStatusUuidGet(UUID uuid) {
+    @Override
+    public ResponseEntity<MeetingStatus> v1StatusUuidGet(UUID uuid) {
         logger.debug("Getting provision status for {}.", uuid);
 
-        var result = healthcheckService.getProvisionStatus(uuid);
+        var result = healthcheckService.getStatus(uuid);
 
-        return ResponseEntity.ok(new SchedulingInfo().provisionStatus(result.status()).timeToProvision(result.timeToProvision()));
+        var provisionStatus = result.provisionStatus();
+        var smsStatus = result.smsStatus();
+
+        return ResponseEntity.ok(new MeetingStatus()
+                .schedulingInfo(new SchedulingInfo(provisionStatus.status(), provisionStatus.timeToProvision()))
+                .smsInfo(new SmsInfo(smsStatus.status())));
     }
 
     private Status createStatus(dk.medcom.healthcheck.service.model.Status serviceStatus) {

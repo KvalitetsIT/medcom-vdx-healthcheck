@@ -1,4 +1,4 @@
-﻿<html xmlns:th="http://www.thymeleaf.org">
+﻿<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,8 +8,11 @@
 <body>
 
 <h1>VDX Health check</h1>
-
-<p><a th:href="@{/execute}">Click to execute health check</a></p>
+<form method="post" th:action="@{/execute}">
+    <p></p>Phone: <input name="phone" type="text"/></p>
+    <p></p><input type="submit" value="Click to execute health check"></p>
+</form>
+Only type in your phone number if SMS functionality should be verified.
 
 </body>
 </html>

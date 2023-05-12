@@ -16,7 +16,7 @@ table {
     <script th:inline="javascript">
         let fetchCount = 0;
         async function getProvisionStatus() {
-            let response = await fetch('/v1/provision-status/[(${uuid})]');
+            let response = await fetch('/v1/status/[(${uuid})]');
             let data = await response.json();
             return data;
         }
@@ -24,6 +24,8 @@ table {
         async function updateProvisionStatus() {
             let provisionStatus = document.getElementById('provisionStatus');
             let timeToProvision = document.getElementById('timeToProvision');
+            let smsStatus = document.getElementById('smsStatus');
+
             let result = document.getElementById('result');
             let checking = document.getElementById('checking');
 
@@ -31,11 +33,11 @@ table {
                 await new Promise(r => setTimeout(r, 5000));
                 if(provisionStatus.textContent !== 'PROVISIONED_OK') {
                     getProvisionStatus().then(data => {
-                        provisionStatus.textContent = data.provision_status;
-                        timeToProvision.textContent = data.time_to_provision + " ms";
+                        provisionStatus.textContent = data.scheduling_info.provision_status;
+                        timeToProvision.textContent = data.scheduling_info.time_to_provision + " ms";
+                        smsStatus.textContent = data.sms_info.status;
 
-                        if(data.provision_status === 'PROVISIONED_OK') {
-
+                        if(data.scheduling_info.provision_status === 'PROVISIONED_OK' && (data.sms_info.status === 'SMS NOT FOUND OR NOT SEND' || data.sms_info.status === 'Delivered')) {
                             result.removeAttribute('hidden');
                             checking.setAttribute('hidden', 'hidden');
                         }
@@ -83,6 +85,12 @@ table {
             <td>Time to provision meeting</td>
             <td id="timeToProvision"></td>
             <td id="provisionStatus"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>SMS status</td>
+            <td>-</td>
+            <td id="smsStatus"></td>
             <td></td>
         </tr>
     </table>
