@@ -1,12 +1,9 @@
 package dk.medcom.healthcheck.client.videoapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Date;
 
 public class CreateMeeting {
     @NotNull
