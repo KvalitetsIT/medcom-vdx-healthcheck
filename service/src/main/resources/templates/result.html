@@ -37,7 +37,7 @@ table {
                         timeToProvision.textContent = data.scheduling_info.time_to_provision + " ms";
                         smsStatus.textContent = data.sms_info.status;
 
-                        if(data.scheduling_info.provision_status === 'PROVISIONED_OK' && (data.sms_info.status === 'SMS NOT FOUND OR NOT SEND' || data.sms_info.status === 'Delivered')) {
+                        if((data.scheduling_info.provision_status === 'PROVISIONED_OK' || data.scheduling_info.provision_status === 'DEPROVISION_OK') && (data.sms_info.status === 'SMS NOT FOUND OR NOT SEND' || data.sms_info.status === 'Delivered')) {
                             result.removeAttribute('hidden');
                             checking.setAttribute('hidden', 'hidden');
                         }
