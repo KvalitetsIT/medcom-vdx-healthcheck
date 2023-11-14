@@ -68,14 +68,14 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
     private void recordTimeIfProvisionedOk(ProvisionStatus provisionStatus, Timer timer) {
         if(provisionStatus != null && provisionStatus.timeToProvision() > 0) {
-            logger.debug("Recording metric in timer.");
+            logger.debug("Recording metric in timer. Response time: {}", provisionStatus.timeToProvision());
             timer.record(provisionStatus.timeToProvision(), TimeUnit.MILLISECONDS);
         }
     }
 
     private void recordTimeIfPositiveResponse(Status status, Timer timer) {
         if(status.responseTime() > 0) {
-            logger.debug("Recording metric in timer.");
+            logger.debug("Recording metric in timer. Response time: {}", status.responseTime());
             timer.record(status.responseTime(), TimeUnit.MILLISECONDS);
         }
     }
