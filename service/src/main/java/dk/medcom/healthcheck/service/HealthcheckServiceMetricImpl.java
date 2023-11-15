@@ -57,25 +57,25 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
         logger.debug("Done checking for provision status.");
 
-        recordTimeIfPositiveResponse(health.sts(), stsTimer);
-        recordTimeIfPositiveResponse(health.videoAPi(), videoApiTimer);
-        recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer);
-        recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi);
-        recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom);
+        recordTimeIfPositiveResponse(health.sts(), stsTimer, TimerConfiguration.SERVICE_STS);
+        recordTimeIfPositiveResponse(health.videoAPi(), videoApiTimer, TimerConfiguration.SERVICE_VIDEO_API);
+        recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer, TimerConfiguration.SERVICE_SHORT_LINK);
+        recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi, TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
+        recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom, TimerConfiguration.PROVISION_ROOM);
 
         return health;
     }
 
-    private void recordTimeIfProvisionedOk(ProvisionStatus provisionStatus, Timer timer) {
+    private void recordTimeIfProvisionedOk(ProvisionStatus provisionStatus, Timer timer, String timerName) {
         if(provisionStatus != null && provisionStatus.timeToProvision() > 0) {
-            logger.debug("Recording metric in timer. Response time: {}", provisionStatus.timeToProvision());
+            logger.debug("Recording metric in timer. Timer: {}. Response time: {}", timerName, provisionStatus.timeToProvision());
             timer.record(provisionStatus.timeToProvision(), TimeUnit.MILLISECONDS);
         }
     }
 
-    private void recordTimeIfPositiveResponse(Status status, Timer timer) {
+    private void recordTimeIfPositiveResponse(Status status, Timer timer, String timerName) {
         if(status.responseTime() > 0) {
-            logger.debug("Recording metric in timer. Response time: {}", status.responseTime());
+            logger.debug("Recording metric in timer. Timer: {}. Response time: {}", timerName, status.responseTime());
             timer.record(status.responseTime(), TimeUnit.MILLISECONDS);
         }
     }
