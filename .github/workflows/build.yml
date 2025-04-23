@@ -18,7 +18,7 @@ jobs:
         echo "DOCKER_DOCUMENTATION=kvalitetsit/medcom-vdx-healthcheck-documentation" >> $GITHUB_ENV
 
 # Checkout source code
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
 # Fail if DOCKER_SERVICE is medcom-vdx-healthcheck and repo is not medcom-vdx-healthcheck. This step can be deleted once
     - name: Initial build
@@ -26,7 +26,7 @@ jobs:
 
 # Cache maven stuff
     - name: Cache local Maven repository
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -41,7 +41,7 @@ jobs:
 
 # Login to docker hub using secrets in GitHub.
     - name: Login to docker
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_HUB_USER }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
@@ -98,7 +98,7 @@ jobs:
       run: ./build/docker-push.sh ${{ env.DOCKER_DOCUMENTATION }}:${{ steps.tag.outputs.VERSION }}
 
     - name: Create Release Notes
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       if: ${{ steps.tag.conclusion != 'skipped' }}
       with:
         generate_release_notes: true
