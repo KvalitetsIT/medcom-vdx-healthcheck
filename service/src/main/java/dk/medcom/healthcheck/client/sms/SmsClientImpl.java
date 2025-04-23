@@ -10,7 +10,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +18,7 @@ public class SmsClientImpl implements SmsClient {
     private final WebClient webClient;
 
     public SmsClientImpl(WebClient.Builder webClientBuilder, String endpoint) {
-        logger.info("Video API endpoint: " + endpoint);
+        logger.info("Video API endpoint: {}", endpoint);
         webClient = webClientBuilder
                 .baseUrl(endpoint)
                 .build();
