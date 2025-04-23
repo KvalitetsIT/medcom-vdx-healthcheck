@@ -52,12 +52,12 @@ openssl pkcs12 -export -out $STS_STORE_P12 -inkey "$STS_CLIENT_KEY" -in "$STS_CL
 keytool -importkeystore -srckeystore "$STS_STORE_P12" -srcstoretype pkcs12 -srcalias $STS_ALIAS -srcstorepass "$STS_STORE_PASSWORD" -destkeystore $STS_STORE -deststoretype jks -deststorepass "$STS_STORE_PASSWORD" -destalias "$STS_ALIAS"
 
 export STS_PROPERTIES=/home/appuser/sts.properties
-echo "org.apache.ws.security.crypto.provider=org.apache.ws.security.components.crypto.Merlin" > "$STS_PROPERTIES"
-echo "org.apache.ws.security.crypto.merlin.keystore.type=jks" >> "$STS_PROPERTIES"
-echo "org.apache.ws.security.crypto.merlin.keystore.password=$STS_STORE_PASSWORD" >> "$STS_PROPERTIES"
-echo "org.apache.ws.security.crypto.merlin.keystore.private.password=$STS_STORE_PASSWORD" >> "$STS_PROPERTIES"
-echo "org.apache.ws.security.crypto.merlin.keystore.alias=client" >> "$STS_PROPERTIES"
-echo "org.apache.ws.security.crypto.merlin.keystore.file=$STS_STORE" >> "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.provider=org.apache.wss4j.common.crypto.Merlin" > "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.merlin.keystore.type=jks" >> "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.merlin.keystore.password=$STS_STORE_PASSWORD" >> "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.merlin.keystore.private.password=$STS_STORE_PASSWORD" >> "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.merlin.keystore.alias=client" >> "$STS_PROPERTIES"
+echo "org.apache.wss4j.crypto.merlin.keystore.file=$STS_STORE" >> "$STS_PROPERTIES"
 
 JAR_FILE=web.jar
 
