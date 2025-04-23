@@ -1,4 +1,4 @@
-FROM ibm-semeru-runtimes:open-17-jre
+FROM ibm-semeru-runtimes:open-21-jre
 
 RUN apt-get update && apt-get install -y tzdata
 
@@ -14,5 +14,5 @@ COPY /maven/web-exec.jar web.jar
 EXPOSE 8080
 EXPOSE 8081
 
-USER appuser
+USER 11001
 ENTRYPOINT ["/home/appuser/entrypoint.sh"]

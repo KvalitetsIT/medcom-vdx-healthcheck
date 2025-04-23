@@ -27,27 +27,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 		</dependency>
 
 		<!-- Test dependencies -->
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
@@ -74,9 +58,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
-			<scope>test</scope>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
@@ -84,7 +67,7 @@
 			<plugin>
 				<artifactId>exec-maven-plugin</artifactId>
 				<groupId>org.codehaus.mojo</groupId>
-				<version>3.1.1</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<id>Get old doc versions</id>
@@ -153,7 +136,7 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>6.6.0</version>
+				<version>7.11.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -165,6 +148,7 @@
 							<configOptions>
 								<sourceFolder>src/test/java</sourceFolder>
 								<dateLibrary>java8</dateLibrary>
+								<useJakartaEe>true</useJakartaEe>
 							</configOptions>
 							<output>${project.build.directory}/generated-test-sources/openapi/test</output>
 							<generateApiTests>false</generateApiTests>
@@ -188,6 +172,8 @@
 								<performBeanValidation>true</performBeanValidation>
 								<library>spring-cloud</library>
 								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
+								<useTags>true</useTags>
 							</configOptions>
 							<output>${project.build.directory}/generated-sources/openapi/main</output>
 							<generateApiDocumentation>false</generateApiDocumentation>
@@ -225,7 +211,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.2</version>
 				<executions>
 					<execution>
 						<goals>
