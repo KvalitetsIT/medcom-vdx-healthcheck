@@ -18,7 +18,7 @@ jobs:
         echo "DOCKER_DOCUMENTATION=kvalitetsit/medcom-vdx-healthcheck-documentation" >> $GITHUB_ENV
 
 # Checkout source code
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
 # Fail if DOCKER_SERVICE is medcom-vdx-healthcheck and repo is not medcom-vdx-healthcheck. This step can be deleted once
     - name: Initial build
