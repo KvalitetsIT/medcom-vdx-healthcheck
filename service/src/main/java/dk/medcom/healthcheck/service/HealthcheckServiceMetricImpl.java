@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
@@ -35,13 +36,31 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
         var health = healthcheckService.checkHealthWithProvisioning();
 
+        var provisionStatus = checkProvisionStatus(health.meetingUuid());
+
+        recordTimeIfPositiveResponse(health.sts(), stsTimer, TimerConfiguration.SERVICE_STS);
+        recordTimeIfPositiveResponse(health.videoAPi(), videoApiTimer, TimerConfiguration.SERVICE_VIDEO_API);
+        recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer, TimerConfiguration.SERVICE_SHORT_LINK);
+        recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi, TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
+        recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom, TimerConfiguration.PROVISION_ROOM);
+
+        return health;
+    }
+
+    private ProvisionStatus checkProvisionStatus(UUID meetingUuid) {
+        if (meetingUuid == null) {
+            logger.debug("Meeting uuid not found. Skipping provision status check.");
+            return null;
+        }
+
+        logger.debug("Checking provision status.");
         int runTime = 0;
         ProvisionStatus provisionStatus = null;
 
-        while(runTime < maxProvisionCheckTime) {
-            provisionStatus = healthcheckService.getProvisionStatus(health.meetingUuid());
+        while (runTime < maxProvisionCheckTime) {
+            provisionStatus = healthcheckService.getProvisionStatus(meetingUuid);
 
-            if(provisionStatus.status().equals("PROVISIONED_OK")) {
+            if (provisionStatus.status().equals("PROVISIONED_OK")) {
                 logger.debug("Provision status OK. Breaking loop.");
                 break;
             }
@@ -57,13 +76,7 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
         logger.debug("Done checking for provision status.");
 
-        recordTimeIfPositiveResponse(health.sts(), stsTimer, TimerConfiguration.SERVICE_STS);
-        recordTimeIfPositiveResponse(health.videoAPi(), videoApiTimer, TimerConfiguration.SERVICE_VIDEO_API);
-        recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer, TimerConfiguration.SERVICE_SHORT_LINK);
-        recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi, TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
-        recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom, TimerConfiguration.PROVISION_ROOM);
-
-        return health;
+        return provisionStatus;
     }
 
     private void recordTimeIfProvisionedOk(ProvisionStatus provisionStatus, Timer timer, String timerName) {
