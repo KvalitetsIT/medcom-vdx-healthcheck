@@ -3,21 +3,19 @@ package dk.medcom.healthcheck.controller;
 import dk.medcom.healthcheck.service.HealthcheckService;
 import dk.medcom.healthcheck.service.model.HealthcheckResult;
 import dk.medcom.healthcheck.service.model.Status;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HealthcheckControllerTest {
     private HealthcheckController healthcheckController;
     private HealthcheckService healthcheckService;
 
-    @Before
+    @BeforeEach
     public void setup() {
         healthcheckService = Mockito.mock(HealthcheckService.class);
 

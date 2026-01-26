@@ -14,8 +14,8 @@ import dk.medcom.healthcheck.client.videoapi.model.Meeting;
 import dk.medcom.healthcheck.client.videoapi.model.SchedulingInfo;
 import dk.medcom.healthcheck.service.model.Status;
 import org.apache.cxf.ws.security.tokenstore.SecurityToken;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -23,8 +23,6 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 
@@ -38,7 +36,7 @@ public class HealthcheckServiceImplTest {
     private AuthorizationClient smsAuthorizationClient;
     private SmsClient smsClient;
 
-    @Before
+    @BeforeEach
     public void setup() {
         stsClient = Mockito.mock(StsClient.class);
         shortLinkClient = Mockito.mock(ShortLinkClient.class);
@@ -327,9 +325,6 @@ public class HealthcheckServiceImplTest {
         var videoApiResponse = new Result<>(false, "some_message", 30L, schedulingInfo);
         Mockito.when(videoApiClient.readSchedulingInfo(Mockito.eq(accessToken.getAccessToken().toString()), Mockito.any())).thenReturn(videoApiResponse);
 
-        var smsStatus = new SmsStatus();
-        smsStatus.setStatus("DELIVERED");
-        var r = new Result<>(10L, Collections.singletonList(smsStatus));
         Mockito.when(smsClient.getStatus(Mockito.eq(smsAccessToken.getAccessToken().toString()), Mockito.any())).thenThrow(WebClientResponseException.NotFound.class);
 
         var result = healthcheckService.getStatus(input);
@@ -451,6 +446,7 @@ public class HealthcheckServiceImplTest {
         assertStatusOk(result.accessTokenForVideoApi(), accessTokenResponse.responseTime());
         assertStatusOk(result.videoAPi(), videoApiResponse.responseTime());
         assertStatusOk(result.shortLink(), shortLinkResponse.responseTime());
+        assertTrue(result.sms().isPresent());
         assertStatusOk(result.sms().get(), smsResponse.responseTime());
         assertEquals(meeting.getUuid(), result.meetingUuid());
 

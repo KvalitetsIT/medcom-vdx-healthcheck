@@ -18,33 +18,32 @@ public class TimerConfiguration {
 
     @Bean
     public MeterBinder stsTimer() {
-        return createTimer(TIMER_NAME, SERVICE_STS);
+        return createTimer(SERVICE_STS);
     }
 
     @Bean
     public MeterBinder videoApiTimer() {
-        return createTimer(TIMER_NAME, SERVICE_VIDEO_API);
+        return createTimer(SERVICE_VIDEO_API);
     }
 
     @Bean
     public MeterBinder shortLinkTimer() {
-        return createTimer(TIMER_NAME, SERVICE_SHORT_LINK);
+        return createTimer(SERVICE_SHORT_LINK);
     }
 
     @Bean
     public MeterBinder accessTokenForVideoApiTimer() {
-        return createTimer(TIMER_NAME, SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
+        return createTimer(SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
     }
 
     @Bean
     public MeterBinder provisionTimer() {
-        return createTimer(TIMER_NAME, PROVISION_ROOM);
+        return createTimer(PROVISION_ROOM);
     }
 
-    private MeterBinder createTimer(String name, String service) {
-        return registry -> Timer.builder(name)
+    private MeterBinder createTimer(String service) {
+        return registry -> Timer.builder(TimerConfiguration.TIMER_NAME)
                 .distributionStatisticExpiry(Duration.ofMinutes(30L))
-                .publishPercentiles(1, 0.95, 0.9, 0.8)
                 .publishPercentileHistogram()
                 .tag("service", service)
                 .register(registry);
