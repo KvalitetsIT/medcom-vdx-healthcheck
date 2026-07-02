@@ -36,7 +36,7 @@
 		<spring-request-id-logger-version>3.0.0</spring-request-id-logger-version>
 		<jacoco-version>0.8.15</jacoco-version>
 		<org-apache-cxf-version>4.2.2</org-apache-cxf-version>
-		<ok-http-version>5.3.2</ok-http-version>
+		<ok-http-version>5.4.0</ok-http-version>
 	</properties>
 
 	<dependencyManagement>
