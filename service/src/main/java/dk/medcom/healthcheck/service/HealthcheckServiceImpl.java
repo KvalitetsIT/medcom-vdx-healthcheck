@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 public class HealthcheckServiceImpl implements HealthcheckService {
     private static final Logger logger = LoggerFactory.getLogger(HealthcheckServiceImpl.class);
+    public static final String NOT_CALLED_MESSAGE = "Not called due to previous error.";
     private final StsClient stsClient;
     private final ShortLinkClient shortLinkClient;
     private final AuthorizationClient authorizationClient;
@@ -201,7 +202,7 @@ public class HealthcheckServiceImpl implements HealthcheckService {
 
     private <T, Z>  Result<T> callIfOk(Result<Z> previousCallStatus, Supplier<Result<T>> nextCall) {
         if(previousCallStatus == null || !previousCallStatus.ok()) {
-            return new Result<>(false, "Not called due to previous error.", 0L, null);
+            return new Result<>(false, NOT_CALLED_MESSAGE, 0L, null);
         }
 
         return nextCall.get();

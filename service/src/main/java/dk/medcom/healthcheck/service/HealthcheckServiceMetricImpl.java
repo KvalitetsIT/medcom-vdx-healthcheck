@@ -5,23 +5,47 @@ import dk.medcom.healthcheck.service.model.HealthcheckResult;
 import dk.medcom.healthcheck.service.model.ProvisionStatus;
 import dk.medcom.healthcheck.service.model.Status;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
     private static final Logger logger = LoggerFactory.getLogger(HealthcheckServiceMetricImpl.class);
+    public static final String UP_GAUGE_NAME = "vdx_healthcheck_up";
+    public static final String LAST_RUN_GAUGE_NAME = "vdx_healthcheck_last_run_timestamp_seconds";
+    private static final List<String> SERVICES = List.of(TimerConfiguration.SERVICE_STS,
+            TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API,
+            TimerConfiguration.SERVICE_VIDEO_API,
+            TimerConfiguration.SERVICE_SHORT_LINK,
+            TimerConfiguration.PROVISION_ROOM);
+
     private final HealthcheckService healthcheckService;
     private final MeterRegistry meterRegistry;
 
     private final int maxProvisionCheckTime = 120;
 
+    // 1 = OK, 0 = failed
+    private final Map<String, Double> upStatus = new ConcurrentHashMap<>();
+
+    private final AtomicLong lastRun = new AtomicLong();
+
     public HealthcheckServiceMetricImpl(HealthcheckService healthcheckService, MeterRegistry meterRegistry) {
         this.healthcheckService = healthcheckService;
         this.meterRegistry = meterRegistry;
+
+        SERVICES.forEach(service -> {
+            upStatus.put(service, Double.NaN);
+            meterRegistry.gauge(UP_GAUGE_NAME, Tags.of("service", service), upStatus, x -> x.get(service));
+        });
+        meterRegistry.gauge(LAST_RUN_GAUGE_NAME, Tags.empty(), lastRun, AtomicLong::doubleValue);
     }
 
     @Override
@@ -44,7 +68,26 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
         recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi, TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
         recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom, TimerConfiguration.PROVISION_ROOM);
 
+        setUpStatus(TimerConfiguration.SERVICE_STS, health.sts());
+        setUpStatus(TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API, health.accessTokenForVideoApi());
+        setUpStatus(TimerConfiguration.SERVICE_VIDEO_API, health.videoAPi());
+        setUpStatus(TimerConfiguration.SERVICE_SHORT_LINK, health.shortLink());
+        upStatus.put(TimerConfiguration.PROVISION_ROOM, provisionStatus == null ? Double.NaN : provisionStatus.status().equals("PROVISIONED_OK") ? 1 : 0);
+        lastRun.set(System.currentTimeMillis() / 1000);
+
         return health;
+    }
+
+    private void setUpStatus(String service, Status status) {
+        if(HealthcheckServiceImpl.NOT_CALLED_MESSAGE.equals(status.message())) {
+            upStatus.put(service, Double.NaN);
+            return;
+        }
+
+        if(!status.ok()) {
+            logger.warn("Healthcheck failed for {}: {}", service, status.message());
+        }
+        upStatus.put(service, status.ok() ? 1d : 0d);
     }
 
     private ProvisionStatus checkProvisionStatus(UUID meetingUuid) {
