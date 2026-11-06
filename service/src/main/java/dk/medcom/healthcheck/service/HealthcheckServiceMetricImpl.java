@@ -4,8 +4,8 @@ import dk.medcom.healthcheck.configuration.TimerConfiguration;
 import dk.medcom.healthcheck.service.model.HealthcheckResult;
 import dk.medcom.healthcheck.service.model.ProvisionStatus;
 import dk.medcom.healthcheck.service.model.Status;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
     private final int maxProvisionCheckTime = 120;
 
-    // 1 = OK, 0 = failed
+    // 1 = OK, 0 = failed, NaN = not called / unknown
     private final Map<String, Double> upStatus = new ConcurrentHashMap<>();
 
     private final AtomicLong lastRun = new AtomicLong();
@@ -43,9 +43,15 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
 
         SERVICES.forEach(service -> {
             upStatus.put(service, Double.NaN);
-            meterRegistry.gauge(UP_GAUGE_NAME, Tags.of("service", service), upStatus, x -> x.get(service));
+            Gauge.builder(UP_GAUGE_NAME, upStatus, x -> x.getOrDefault(service, Double.NaN))
+                    .tag("service", service)
+                    .strongReference(true)
+                    .register(meterRegistry);
         });
-        meterRegistry.gauge(LAST_RUN_GAUGE_NAME, Tags.empty(), lastRun, AtomicLong::doubleValue);
+
+        Gauge.builder(LAST_RUN_GAUGE_NAME, lastRun, AtomicLong::doubleValue)
+                .strongReference(true)
+                .register(meterRegistry);
     }
 
     @Override
@@ -72,7 +78,7 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
         setUpStatus(TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API, health.accessTokenForVideoApi());
         setUpStatus(TimerConfiguration.SERVICE_VIDEO_API, health.videoAPi());
         setUpStatus(TimerConfiguration.SERVICE_SHORT_LINK, health.shortLink());
-        upStatus.put(TimerConfiguration.PROVISION_ROOM, provisionStatus == null ? Double.NaN : provisionStatus.status().equals("PROVISIONED_OK") ? 1 : 0);
+        upStatus.put(TimerConfiguration.PROVISION_ROOM, provisionStatus == null ? Double.NaN : provisionStatus.status().equals("PROVISIONED_OK") ? 1d : 0d);
         lastRun.set(System.currentTimeMillis() / 1000);
 
         return health;
