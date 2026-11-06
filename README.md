@@ -37,6 +37,16 @@ Spring boot actuator is listening for connections on port 8081. This is used as 
 Prometheus scrape endpoint: `http://localhost:8081/actuator/prometheus`  
 Health URL that can be used for readiness probe: `http://localhost:8081/actuator/health`
 
+### Metrics
+
+The healthcheck runs every `HEALTHCHECK_RATE` and exposes the following metrics:
+
+| Metric                                        | Description                                                                                                                                      |
+|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| vdx_healthcheck_seconds{service}              | Response time for each step.                                                                                                                     |
+| vdx_healthcheck_up{service}                   | Result of the latest run for each step. 1 = OK, 0 = failed, NaN = not called due to an earlier error. Services: sts, accessTokenForVideoApi, videoAPi, shortLink, provisionRoom. |
+| vdx_healthcheck_last_run_timestamp_seconds    | Unix timestamp of the latest completed run.                                                                                                      |
+
 ### Documentation
 
 Documentation of the API is build as a separate Docker image. Documentation is build using Swagger. The documentation 
