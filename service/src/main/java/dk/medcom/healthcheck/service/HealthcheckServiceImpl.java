@@ -1,6 +1,7 @@
 package dk.medcom.healthcheck.service;
 
 import dk.medcom.healthcheck.client.Result;
+import dk.medcom.healthcheck.client.keycloak.KeycloakClient;
 import dk.medcom.healthcheck.client.security.AuthorizationClient;
 import dk.medcom.healthcheck.client.security.StsClient;
 import dk.medcom.healthcheck.client.security.TokenEncoder;
@@ -32,6 +33,8 @@ public class HealthcheckServiceImpl implements HealthcheckService {
     private final TokenEncoder tokenEncoder;
     private final AuthorizationClient smsAuthorizationClient;
     private final SmsClient smsClient;
+    private final KeycloakClient keycloakClientCredentialsClient;
+    private final KeycloakClient keycloakUserClient;
 
     public HealthcheckServiceImpl(StsClient stsClient,
                                   ShortLinkClient shortLinkClient,
@@ -39,7 +42,9 @@ public class HealthcheckServiceImpl implements HealthcheckService {
                                   VideoApiClient videoApiClient,
                                   TokenEncoder tokenEncoder,
                                   AuthorizationClient smsAuthorizationClient,
-                                  SmsClient smsClient) {
+                                  SmsClient smsClient,
+                                  KeycloakClient keycloakClientCredentialsClient,
+                                  KeycloakClient keycloakUserClient) {
         this.stsClient = stsClient;
         this.shortLinkClient = shortLinkClient;
         this.authorizationClient = videoApiAuthorizationClient;
@@ -47,6 +52,8 @@ public class HealthcheckServiceImpl implements HealthcheckService {
         this.tokenEncoder = tokenEncoder;
         this.smsAuthorizationClient = smsAuthorizationClient;
         this.smsClient = smsClient;
+        this.keycloakClientCredentialsClient = keycloakClientCredentialsClient;
+        this.keycloakUserClient = keycloakUserClient;
     }
 
     @Override
@@ -192,7 +199,9 @@ public class HealthcheckServiceImpl implements HealthcheckService {
                 createStatus(shortLinkResponse),
                 smsResponse == null ? Optional.empty() : Optional.of(createStatus(smsResponse)),
                 createStatus(accessToken),
-                meetingUuid);
+                meetingUuid,
+                createStatus(keycloakClientCredentialsClient.login()),
+                createStatus(keycloakUserClient.login()));
     }
 
     private <T> Status createStatus(Result<T> result) {

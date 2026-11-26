@@ -1,5 +1,7 @@
 package dk.medcom.healthcheck.configuration;
 
+import dk.medcom.healthcheck.client.keycloak.KeycloakClient;
+import dk.medcom.healthcheck.client.keycloak.KeycloakClientImpl;
 import dk.medcom.healthcheck.client.security.*;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClientImpl;
@@ -17,6 +19,7 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +44,30 @@ public class HealthcheckConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(HealthcheckConfiguration.class);
 
     @Bean
-    public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient videpApiAuthorizationClient, VideoApiClient videoApiClient, AuthorizationClient smsAuthorizationClient, SmsClient smsClient) {
-        return new HealthcheckServiceImpl(stsClient, shortLinkClient, videpApiAuthorizationClient, videoApiClient, new TokenEncoder(), smsAuthorizationClient, smsClient);
+    public HealthcheckService healthcheckService(StsClient stsClient, ShortLinkClient shortLinkClient, AuthorizationClient videpApiAuthorizationClient, VideoApiClient videoApiClient, AuthorizationClient smsAuthorizationClient, SmsClient smsClient,
+                                                 @Qualifier("keycloakClientCredentialsClient") KeycloakClient keycloakClientCredentialsClient,
+                                                 @Qualifier("keycloakUserClient") KeycloakClient keycloakUserClient) {
+        return new HealthcheckServiceImpl(stsClient, shortLinkClient, videpApiAuthorizationClient, videoApiClient, new TokenEncoder(), smsAuthorizationClient, smsClient, keycloakClientCredentialsClient, keycloakUserClient);
+    }
+
+    @Bean
+    public KeycloakClient keycloakClientCredentialsClient(WebClient.Builder webClientBuilder,
+                                                          @Value("${KEYCLOAK_TOKEN_URL}") String tokenUrl,
+                                                          @Value("${KEYCLOAK_CLIENT_ID}") String clientId,
+                                                          @Value("${KEYCLOAK_CLIENT_SECRET}") String clientSecret) {
+        logger.info("Keycloak client credentials login in health check. Token URL: {}, client: {}", tokenUrl, clientId);
+        return new KeycloakClientImpl(webClientBuilder, tokenUrl, clientId, clientSecret, null, null);
+    }
+
+    @Bean
+    public KeycloakClient keycloakUserClient(WebClient.Builder webClientBuilder,
+                                             @Value("${KEYCLOAK_TOKEN_URL}") String tokenUrl,
+                                             @Value("${KEYCLOAK_USER_CLIENT_ID:${KEYCLOAK_CLIENT_ID}}") String clientId,
+                                             @Value("${KEYCLOAK_USER_CLIENT_SECRET:${KEYCLOAK_CLIENT_SECRET}}") String clientSecret,
+                                             @Value("${KEYCLOAK_USERNAME}") String username,
+                                             @Value("${KEYCLOAK_PASSWORD}") String password) {
+        logger.info("Keycloak test user login in health check. Token URL: {}, client: {}, user: {}", tokenUrl, clientId, username);
+        return new KeycloakClientImpl(webClientBuilder, tokenUrl, clientId, clientSecret, username, password);
     }
 
     @Bean

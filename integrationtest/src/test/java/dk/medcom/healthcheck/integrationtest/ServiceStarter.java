@@ -18,7 +18,7 @@ public class ServiceStarter {
     private static final Logger logger = LoggerFactory.getLogger(ServiceStarter.class);
     private static final Logger serviceLogger = LoggerFactory.getLogger("medcom-vdx-healthcheck");
 
-    public void startServices() throws FileNotFoundException {
+    public void startServices(String keycloakTokenUrl) throws FileNotFoundException {
         // Development configuration
         System.setProperty("spring.thymeleaf.cache", "false");
 
@@ -33,14 +33,18 @@ public class ServiceStarter {
         System.setProperty("STS_STORE_PASSWORD", "Test1234");
         System.setProperty("STS_STORE", clientKeystore.getPath());
         System.setProperty("HEALTHCHECK_RATE", "PT5M");
+        System.setProperty("KEYCLOAK_TOKEN_URL", keycloakTokenUrl);
+        System.setProperty("KEYCLOAK_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_CLIENT_ID);
+        System.setProperty("KEYCLOAK_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_CLIENT_SECRET);
+        System.setProperty("KEYCLOAK_USERNAME", AbstractIntegrationTest.KEYCLOAK_USERNAME);
+        System.setProperty("KEYCLOAK_PASSWORD", AbstractIntegrationTest.KEYCLOAK_PASSWORD);
 
         System.setProperty("LOG_LEVEL", "DEBUG");
 
         SpringApplication.run((VideoLinkHandlerApplication.class));
     }
 
-    public GenericContainer<?> startServicesInDocker() {
-        Network dockerNetwork = Network.newNetwork();
+    public GenericContainer<?> startServicesInDocker(Network dockerNetwork, String keycloakTokenUrl) {
         GenericContainer<?> service;
 
         // Start service
@@ -64,6 +68,11 @@ public class ServiceStarter {
                 .withEnv("STS_CLIENT_KEY", "/client/key.pem")
                 .withEnv("STS_CLIENT_CERT", "/client/cert.pem")
                 .withEnv("HEALTHCHECK_RATE", "PT5M")
+                .withEnv("KEYCLOAK_TOKEN_URL", keycloakTokenUrl)
+                .withEnv("KEYCLOAK_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_CLIENT_ID)
+                .withEnv("KEYCLOAK_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_CLIENT_SECRET)
+                .withEnv("KEYCLOAK_USERNAME", AbstractIntegrationTest.KEYCLOAK_USERNAME)
+                .withEnv("KEYCLOAK_PASSWORD", AbstractIntegrationTest.KEYCLOAK_PASSWORD)
 
                 .withExposedPorts(8081,8080)
                 .waitingFor(Wait.forHttp("/actuator").forPort(8081).forStatusCode(200));

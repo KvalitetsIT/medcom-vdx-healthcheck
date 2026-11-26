@@ -12,6 +12,16 @@ services:
       - userrole_user_values=userrole1,userrole2
       - userrole_monitor_values=monitorrole
       - userrole_provisioner_values=provisionerrole
+
+      # Keycloak login tests (client credentials and test user via password grant).
+      - KEYCLOAK_TOKEN_URL=https://keycloak.example.com/realms/REALM/protocol/openid-connect/token
+      - KEYCLOAK_CLIENT_ID=healthcheck
+      - KEYCLOAK_CLIENT_SECRET=secret
+      - KEYCLOAK_USERNAME=testuser
+      - KEYCLOAK_PASSWORD=password
+      # Optional. Defaults to KEYCLOAK_CLIENT_ID / KEYCLOAK_CLIENT_SECRET.
+      # - KEYCLOAK_USER_CLIENT_ID=healthcheck-user
+      # - KEYCLOAK_USER_CLIENT_SECRET=
      ports:
       - 8080:8080
    documenatation-and-test:

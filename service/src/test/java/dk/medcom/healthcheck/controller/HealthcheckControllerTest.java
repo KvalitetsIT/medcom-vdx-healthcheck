@@ -28,7 +28,9 @@ public class HealthcheckControllerTest {
         Status videoStatus = new Status(false, "another msg", 20L);
         Status shortLinkStatus = new Status(true, null, 30L);
         Status accessTokenStatus = new Status(false, "Some msg", 40L);
-        var serviceResponse = new HealthcheckResult(stsStatus, videoStatus, shortLinkStatus, null, accessTokenStatus, UUID.randomUUID());
+        Status keycloakClientCredentialsStatus = new Status(true, null, 50L);
+        Status keycloakUserStatus = new Status(false, "Wrong HTTP status from Keycloak: 401", 60L);
+        var serviceResponse = new HealthcheckResult(stsStatus, videoStatus, shortLinkStatus, null, accessTokenStatus, UUID.randomUUID(), keycloakClientCredentialsStatus, keycloakUserStatus);
 
         Mockito.when(healthcheckService.checkHealth()).thenReturn(serviceResponse);
 
@@ -58,5 +60,13 @@ public class HealthcheckControllerTest {
         assertEquals(accessTokenStatus.ok(), healthCheckResponse.getVideoApiAccessToken().getStatus());
         assertEquals(accessTokenStatus.message(), healthCheckResponse.getVideoApiAccessToken().getMessage());
         assertEquals(accessTokenStatus.responseTime(), healthCheckResponse.getVideoApiAccessToken().getResponseTime());
+
+        assertEquals(keycloakClientCredentialsStatus.ok(), healthCheckResponse.getKeycloakClientCredentials().getStatus());
+        assertEquals(keycloakClientCredentialsStatus.message(), healthCheckResponse.getKeycloakClientCredentials().getMessage());
+        assertEquals(keycloakClientCredentialsStatus.responseTime(), healthCheckResponse.getKeycloakClientCredentials().getResponseTime());
+
+        assertEquals(keycloakUserStatus.ok(), healthCheckResponse.getKeycloakUser().getStatus());
+        assertEquals(keycloakUserStatus.message(), healthCheckResponse.getKeycloakUser().getMessage());
+        assertEquals(keycloakUserStatus.responseTime(), healthCheckResponse.getKeycloakUser().getResponseTime());
     }
 }

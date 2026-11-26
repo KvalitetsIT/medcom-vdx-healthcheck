@@ -8,6 +8,6 @@ import java.io.FileNotFoundException;
 @SpringBootApplication
 public class TestApplication extends SpringBootServletInitializer {
     public static void main(String[] args) throws FileNotFoundException {
-        new ServiceStarter().startServices();
+        new ServiceStarter().startServices(System.getProperty("KEYCLOAK_TOKEN_URL", ""));
     }
 }

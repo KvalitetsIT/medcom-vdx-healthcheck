@@ -33,6 +33,8 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
         var shortLinkTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_SHORT_LINK);
         var accessTokenForVideoApi = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
         var provisionMeetingRoom = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.PROVISION_ROOM);
+        var keycloakClientCredentialsTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_KEYCLOAK_CLIENT_CREDENTIALS);
+        var keycloakUserTimer = meterRegistry.timer(TimerConfiguration.TIMER_NAME, "service", TimerConfiguration.SERVICE_KEYCLOAK_USER);
 
         var health = healthcheckService.checkHealthWithProvisioning();
 
@@ -43,6 +45,8 @@ public class HealthcheckServiceMetricImpl implements HealthcheckServiceMetrics {
         recordTimeIfPositiveResponse(health.shortLink(), shortLinkTimer, TimerConfiguration.SERVICE_SHORT_LINK);
         recordTimeIfPositiveResponse(health.accessTokenForVideoApi(), accessTokenForVideoApi, TimerConfiguration.SERVICE_ACCESS_TOKEN_FOR_VIDEO_API);
         recordTimeIfProvisionedOk(provisionStatus, provisionMeetingRoom, TimerConfiguration.PROVISION_ROOM);
+        recordTimeIfPositiveResponse(health.keycloakClientCredentials(), keycloakClientCredentialsTimer, TimerConfiguration.SERVICE_KEYCLOAK_CLIENT_CREDENTIALS);
+        recordTimeIfPositiveResponse(health.keycloakUser(), keycloakUserTimer, TimerConfiguration.SERVICE_KEYCLOAK_USER);
 
         return health;
     }

@@ -60,6 +60,13 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 | VIDEOAPI_ENDPOINT    | Video API endpoint                                                                                   | Yes      |
 | HEALTHCHECK_RATE     | Rate of healthcheck in java.time.Duration compliant format.                                          | Yes      |
 | SMS_ENDPOINT         | SMS Api endpoint                                                                                     | Yes      |
+| KEYCLOAK_TOKEN_URL   | Keycloak token endpoint, e.g. `https://host/realms/REALM/protocol/openid-connect/token`. Must end with `/token`; the logout endpoint is derived from it. | Yes      |
+| KEYCLOAK_CLIENT_ID   | Keycloak client id used for the client credentials login.                                            | Yes      |
+| KEYCLOAK_CLIENT_SECRET | Keycloak client secret used for the client credentials login.                                      | Yes      |
+| KEYCLOAK_USERNAME    | Username for the test user login (password grant). The session is ended with a logout after each login. | Yes      |
+| KEYCLOAK_PASSWORD    | Password for the test user.                                                                          | Yes      |
+| KEYCLOAK_USER_CLIENT_ID | Client id used for the test user login. Defaults to KEYCLOAK_CLIENT_ID.                           | No       |
+| KEYCLOAK_USER_CLIENT_SECRET | Client secret used for the test user login. Defaults to KEYCLOAK_CLIENT_SECRET. Set it to an empty value for a public client. | No       |
 
 ## Running the service
 
