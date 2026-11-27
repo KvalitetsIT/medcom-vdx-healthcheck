@@ -1,0 +1,33 @@
+{
+  "realm": "idp",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "broker",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "broker-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "redirectUris": ["*"],
+      "attributes": {
+        "backchannel.logout.session.required": "true"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "email": "testuser@example.com",
+      "emailVerified": true,
+      "firstName": "Test",
+      "lastName": "User",
+      "credentials": [
+        { "type": "password", "value": "testpassword", "temporary": false }
+      ]
+    }
+  ]
+}

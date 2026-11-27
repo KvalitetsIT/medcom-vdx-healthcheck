@@ -109,7 +109,7 @@ components:
           description: Keycloak login using client credentials grant.
           $ref: '#/components/schemas/status'
         keycloak-user:
-          description: Keycloak login as test user using password grant. The session is ended again by calling logout.
+          description: Keycloak login as test user through the login page and an identity provider (broker) using the authorization code flow with PKCE. The session is ended again by calling logout.
           $ref: '#/components/schemas/status'
 
     status:

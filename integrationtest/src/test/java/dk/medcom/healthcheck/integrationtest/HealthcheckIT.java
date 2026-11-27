@@ -33,10 +33,19 @@ public class HealthcheckIT extends AbstractIntegrationTest {
         assertNotNull(result);
     }
 
+    /**
+     * The first login creates the user in the broker realm (first broker login). The second login uses the existing user.
+     */
     @Test
     public void testKeycloakLogin() throws Exception {
+        awaitScheduledKeycloakLoginAndDeleteBrokerUser();
+
+        assertKeycloakLoginOk();
+        assertKeycloakLoginOk();
+    }
+
+    private void assertKeycloakLoginOk() throws Exception {
         // Called without the generated client as it rejects responses without the required "sms" field.
-        var logoutsBefore = keycloakRequestCount(KEYCLOAK_LOGOUT_PATH);
         try(var httpClient = HttpClient.newHttpClient()) {
             var response = httpClient.send(HttpRequest.newBuilder(URI.create(getApiBasePath() + "/v1/healthcheck")).GET().build(), HttpResponse.BodyHandlers.ofString());
 
@@ -51,6 +60,7 @@ public class HealthcheckIT extends AbstractIntegrationTest {
             assertTrue(clientCredentials.get("status").getAsBoolean(), response.body());
             assertTrue(user.get("status").getAsBoolean(), response.body());
         }
-        assertEquals(logoutsBefore + 1, keycloakRequestCount(KEYCLOAK_LOGOUT_PATH), "Test user session should be logged out.");
+        assertEquals(0, keycloakUserSessionCount(KEYCLOAK_REALM), "Test user session should be logged out.");
+        assertEquals(0, keycloakUserSessionCount(KEYCLOAK_IDP_REALM), "Test user session in the identity provider should be logged out.");
     }
 }

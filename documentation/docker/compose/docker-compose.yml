@@ -13,10 +13,12 @@ services:
       - userrole_monitor_values=monitorrole
       - userrole_provisioner_values=provisionerrole
 
-      # Keycloak login tests (client credentials and test user via password grant).
+      # Keycloak login tests (client credentials and test user via authorization code flow with PKCE).
       - KEYCLOAK_TOKEN_URL=https://keycloak.example.com/realms/REALM/protocol/openid-connect/token
       - KEYCLOAK_CLIENT_ID=healthcheck
       - KEYCLOAK_CLIENT_SECRET=secret
+      - KEYCLOAK_USER_REDIRECT_URI=https://healthcheck.example.com/callback
+      - KEYCLOAK_BROKER_IDP=idp
       - KEYCLOAK_USERNAME=testuser
       - KEYCLOAK_PASSWORD=password
       # Optional. Defaults to KEYCLOAK_CLIENT_ID / KEYCLOAK_CLIENT_SECRET.

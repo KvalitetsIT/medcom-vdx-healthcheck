@@ -1,7 +1,8 @@
 package dk.medcom.healthcheck.configuration;
 
 import dk.medcom.healthcheck.client.keycloak.KeycloakClient;
-import dk.medcom.healthcheck.client.keycloak.KeycloakClientImpl;
+import dk.medcom.healthcheck.client.keycloak.KeycloakClientCredentialsClient;
+import dk.medcom.healthcheck.client.keycloak.KeycloakUserLoginClient;
 import dk.medcom.healthcheck.client.security.*;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClient;
 import dk.medcom.healthcheck.client.shortlink.ShortLinkClientImpl;
@@ -56,7 +57,7 @@ public class HealthcheckConfiguration {
                                                           @Value("${KEYCLOAK_CLIENT_ID}") String clientId,
                                                           @Value("${KEYCLOAK_CLIENT_SECRET}") String clientSecret) {
         logger.info("Keycloak client credentials login in health check. Token URL: {}, client: {}", tokenUrl, clientId);
-        return new KeycloakClientImpl(webClientBuilder, tokenUrl, clientId, clientSecret, null, null);
+        return new KeycloakClientCredentialsClient(webClientBuilder, tokenUrl, clientId, clientSecret);
     }
 
     @Bean
@@ -64,10 +65,12 @@ public class HealthcheckConfiguration {
                                              @Value("${KEYCLOAK_TOKEN_URL}") String tokenUrl,
                                              @Value("${KEYCLOAK_USER_CLIENT_ID:${KEYCLOAK_CLIENT_ID}}") String clientId,
                                              @Value("${KEYCLOAK_USER_CLIENT_SECRET:${KEYCLOAK_CLIENT_SECRET}}") String clientSecret,
+                                             @Value("${KEYCLOAK_USER_REDIRECT_URI}") String redirectUri,
+                                             @Value("${KEYCLOAK_BROKER_IDP}") String brokerIdP,
                                              @Value("${KEYCLOAK_USERNAME}") String username,
                                              @Value("${KEYCLOAK_PASSWORD}") String password) {
-        logger.info("Keycloak test user login in health check. Token URL: {}, client: {}, user: {}", tokenUrl, clientId, username);
-        return new KeycloakClientImpl(webClientBuilder, tokenUrl, clientId, clientSecret, username, password);
+        logger.info("Keycloak test user login in health check. Token URL: {}, client: {}, redirect URI: {}, IdP: {}, user: {}", tokenUrl, clientId, redirectUri, brokerIdP, username);
+        return new KeycloakUserLoginClient(webClientBuilder, tokenUrl, clientId, clientSecret, redirectUri, brokerIdP, username, password);
     }
 
     @Bean

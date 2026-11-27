@@ -63,9 +63,11 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 | KEYCLOAK_TOKEN_URL   | Keycloak token endpoint, e.g. `https://host/realms/REALM/protocol/openid-connect/token`. Must end with `/token`; the logout endpoint is derived from it. | Yes      |
 | KEYCLOAK_CLIENT_ID   | Keycloak client id used for the client credentials login.                                            | Yes      |
 | KEYCLOAK_CLIENT_SECRET | Keycloak client secret used for the client credentials login.                                      | Yes      |
-| KEYCLOAK_USERNAME    | Username for the test user login (password grant). The session is ended with a logout after each login. | Yes      |
-| KEYCLOAK_PASSWORD    | Password for the test user.                                                                          | Yes      |
-| KEYCLOAK_USER_CLIENT_ID | Client id used for the test user login. Defaults to KEYCLOAK_CLIENT_ID.                           | No       |
+| KEYCLOAK_USERNAME    | Username of the test user in the identity provider. The login uses the authorization code flow with PKCE through Keycloak's login page and the identity provider given by KEYCLOAK_BROKER_IDP (the password grant is deprecated in OAuth 2.1 and not used). The session is ended with a logout after each login. | Yes      |
+| KEYCLOAK_PASSWORD    | Password of the test user in the identity provider.                                                  | Yes      |
+| KEYCLOAK_BROKER_IDP  | Alias of the identity provider in the realm of KEYCLOAK_TOKEN_URL that the test user logs in through. | Yes      |
+| KEYCLOAK_USER_REDIRECT_URI | Redirect URI used in the test user login. Must be a valid redirect URI on the client. It is never called. | Yes      |
+| KEYCLOAK_USER_CLIENT_ID | Client id used for the test user login. The client must have "Standard flow" enabled. Defaults to KEYCLOAK_CLIENT_ID. | No       |
 | KEYCLOAK_USER_CLIENT_SECRET | Client secret used for the test user login. Defaults to KEYCLOAK_CLIENT_SECRET. Set it to an empty value for a public client. | No       |
 
 ## Running the service

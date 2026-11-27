@@ -1,0 +1,22 @@
+{
+  "realm": "test",
+  "enabled": true,
+  "loginTheme": "medcom-vdx-broker",
+  "clients": [
+    {
+      "clientId": "healthcheck",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "healthcheck-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "redirectUris": ["http://localhost/healthcheck/callback"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}
