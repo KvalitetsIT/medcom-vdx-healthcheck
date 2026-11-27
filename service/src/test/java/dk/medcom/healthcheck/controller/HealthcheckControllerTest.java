@@ -61,12 +61,12 @@ public class HealthcheckControllerTest {
         assertEquals(accessTokenStatus.message(), healthCheckResponse.getVideoApiAccessToken().getMessage());
         assertEquals(accessTokenStatus.responseTime(), healthCheckResponse.getVideoApiAccessToken().getResponseTime());
 
-        assertEquals(keycloakClientCredentialsStatus.ok(), healthCheckResponse.getKeycloakClientCredentials().getStatus());
-        assertEquals(keycloakClientCredentialsStatus.message(), healthCheckResponse.getKeycloakClientCredentials().getMessage());
-        assertEquals(keycloakClientCredentialsStatus.responseTime(), healthCheckResponse.getKeycloakClientCredentials().getResponseTime());
+        assertEquals(keycloakClientCredentialsStatus.ok(), healthCheckResponse.getKeycloakClientCredentialsFlow().getStatus());
+        assertEquals(keycloakClientCredentialsStatus.message(), healthCheckResponse.getKeycloakClientCredentialsFlow().getMessage());
+        assertEquals(keycloakClientCredentialsStatus.responseTime(), healthCheckResponse.getKeycloakClientCredentialsFlow().getResponseTime());
 
-        assertEquals(keycloakUserStatus.ok(), healthCheckResponse.getKeycloakUser().getStatus());
-        assertEquals(keycloakUserStatus.message(), healthCheckResponse.getKeycloakUser().getMessage());
-        assertEquals(keycloakUserStatus.responseTime(), healthCheckResponse.getKeycloakUser().getResponseTime());
+        assertEquals(keycloakUserStatus.ok(), healthCheckResponse.getKeycloakUserFlow().getStatus());
+        assertEquals(keycloakUserStatus.message(), healthCheckResponse.getKeycloakUserFlow().getMessage());
+        assertEquals(keycloakUserStatus.responseTime(), healthCheckResponse.getKeycloakUserFlow().getResponseTime());
     }
 }

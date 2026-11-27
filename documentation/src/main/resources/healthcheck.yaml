@@ -87,8 +87,8 @@ components:
         - video-api
         - short-link
         - sms
-        - keycloak-client-credentials
-        - keycloak-user
+        - keycloak-client-credentials-flow
+        - keycloak-user-flow
       properties:
         sts:
           description: STS status
@@ -105,10 +105,10 @@ components:
         sms:
           description: SMS service status
           $ref: '#/components/schemas/status'
-        keycloak-client-credentials:
+        keycloak-client-credentials-flow:
           description: Keycloak login using client credentials grant.
           $ref: '#/components/schemas/status'
-        keycloak-user:
+        keycloak-user-flow:
           description: Keycloak login as test user through the login page and an identity provider (broker) using the authorization code flow with PKCE. The session is ended again by calling logout.
           $ref: '#/components/schemas/status'
 

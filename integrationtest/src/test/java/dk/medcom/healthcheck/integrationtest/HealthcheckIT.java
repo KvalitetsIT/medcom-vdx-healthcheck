@@ -52,8 +52,8 @@ public class HealthcheckIT extends AbstractIntegrationTest {
             assertEquals(200, response.statusCode());
 
             var body = JsonParser.parseString(response.body()).getAsJsonObject();
-            var clientCredentials = body.getAsJsonObject("keycloak-client-credentials");
-            var user = body.getAsJsonObject("keycloak-user");
+            var clientCredentials = body.getAsJsonObject("keycloak-client-credentials-flow");
+            var user = body.getAsJsonObject("keycloak-user-flow");
 
             assertNotNull(clientCredentials, response.body());
             assertNotNull(user, response.body());
