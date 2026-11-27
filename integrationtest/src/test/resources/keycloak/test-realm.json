@@ -5,11 +5,24 @@
   "clients": [
     {
       "clientId": "healthcheck",
+      "description": "Client credentials login",
       "enabled": true,
       "publicClient": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "healthcheck-secret",
       "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false
+    },
+    {
+      "clientId": "healthcheck-user",
+      "description": "Test user login through the identity provider",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "healthcheck-user-secret",
+      "serviceAccountsEnabled": false,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "implicitFlowEnabled": false,

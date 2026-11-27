@@ -35,6 +35,8 @@ public abstract class AbstractIntegrationTest {
     static final String KEYCLOAK_TOKEN_PATH = "/realms/" + KEYCLOAK_REALM + "/protocol/openid-connect/token";
     static final String KEYCLOAK_CLIENT_ID = "healthcheck";
     static final String KEYCLOAK_CLIENT_SECRET = "healthcheck-secret";
+    static final String KEYCLOAK_USER_CLIENT_ID = "healthcheck-user";
+    static final String KEYCLOAK_USER_CLIENT_SECRET = "healthcheck-user-secret";
     static final String KEYCLOAK_REDIRECT_URI = "http://localhost/healthcheck/callback";
     static final String KEYCLOAK_USERNAME = "testuser";
     static final String KEYCLOAK_PASSWORD = "testpassword";

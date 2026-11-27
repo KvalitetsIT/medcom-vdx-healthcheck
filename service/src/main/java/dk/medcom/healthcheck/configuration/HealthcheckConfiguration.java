@@ -63,8 +63,8 @@ public class HealthcheckConfiguration {
     @Bean
     public KeycloakClient keycloakUserClient(WebClient.Builder webClientBuilder,
                                              @Value("${KEYCLOAK_TOKEN_URL}") String tokenUrl,
-                                             @Value("${KEYCLOAK_USER_CLIENT_ID:${KEYCLOAK_CLIENT_ID}}") String clientId,
-                                             @Value("${KEYCLOAK_USER_CLIENT_SECRET:${KEYCLOAK_CLIENT_SECRET}}") String clientSecret,
+                                             @Value("${KEYCLOAK_USER_CLIENT_ID}") String clientId,
+                                             @Value("${KEYCLOAK_USER_CLIENT_SECRET:}") String clientSecret,
                                              @Value("${KEYCLOAK_USER_REDIRECT_URI}") String redirectUri,
                                              @Value("${KEYCLOAK_BROKER_IDP}") String brokerIdP,
                                              @Value("${KEYCLOAK_USERNAME}") String username,

@@ -67,8 +67,8 @@ In the docker-compose setup is also an example on how to set custom endpoints fo
 | KEYCLOAK_PASSWORD    | Password of the test user in the identity provider.                                                  | Yes      |
 | KEYCLOAK_BROKER_IDP  | Alias of the identity provider in the realm of KEYCLOAK_TOKEN_URL that the test user logs in through. | Yes      |
 | KEYCLOAK_USER_REDIRECT_URI | Redirect URI used in the test user login. Must be a valid redirect URI on the client. It is never called. | Yes      |
-| KEYCLOAK_USER_CLIENT_ID | Client id used for the test user login. The client must have "Standard flow" enabled. Defaults to KEYCLOAK_CLIENT_ID. | No       |
-| KEYCLOAK_USER_CLIENT_SECRET | Client secret used for the test user login. Defaults to KEYCLOAK_CLIENT_SECRET. Set it to an empty value for a public client. | No       |
+| KEYCLOAK_USER_CLIENT_ID | Client id used for the test user login. A separate client from KEYCLOAK_CLIENT_ID with "Standard flow" enabled. | Yes      |
+| KEYCLOAK_USER_CLIENT_SECRET | Client secret used for the test user login. Leave it out for a public client. | No       |
 
 ## Running the service
 

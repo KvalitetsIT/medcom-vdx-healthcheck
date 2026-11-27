@@ -36,6 +36,8 @@ public class ServiceStarter {
         System.setProperty("KEYCLOAK_TOKEN_URL", keycloakTokenUrl);
         System.setProperty("KEYCLOAK_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_CLIENT_ID);
         System.setProperty("KEYCLOAK_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_CLIENT_SECRET);
+        System.setProperty("KEYCLOAK_USER_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_USER_CLIENT_ID);
+        System.setProperty("KEYCLOAK_USER_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_USER_CLIENT_SECRET);
         System.setProperty("KEYCLOAK_USER_REDIRECT_URI", AbstractIntegrationTest.KEYCLOAK_REDIRECT_URI);
         System.setProperty("KEYCLOAK_BROKER_IDP", AbstractIntegrationTest.KEYCLOAK_BROKER_IDP);
         System.setProperty("KEYCLOAK_USERNAME", AbstractIntegrationTest.KEYCLOAK_USERNAME);
@@ -73,6 +75,8 @@ public class ServiceStarter {
                 .withEnv("KEYCLOAK_TOKEN_URL", keycloakTokenUrl)
                 .withEnv("KEYCLOAK_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_CLIENT_ID)
                 .withEnv("KEYCLOAK_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_CLIENT_SECRET)
+                .withEnv("KEYCLOAK_USER_CLIENT_ID", AbstractIntegrationTest.KEYCLOAK_USER_CLIENT_ID)
+                .withEnv("KEYCLOAK_USER_CLIENT_SECRET", AbstractIntegrationTest.KEYCLOAK_USER_CLIENT_SECRET)
                 .withEnv("KEYCLOAK_USER_REDIRECT_URI", AbstractIntegrationTest.KEYCLOAK_REDIRECT_URI)
                 .withEnv("KEYCLOAK_BROKER_IDP", AbstractIntegrationTest.KEYCLOAK_BROKER_IDP)
                 .withEnv("KEYCLOAK_USERNAME", AbstractIntegrationTest.KEYCLOAK_USERNAME)

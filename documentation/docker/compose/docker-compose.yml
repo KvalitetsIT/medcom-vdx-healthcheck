@@ -17,13 +17,12 @@ services:
       - KEYCLOAK_TOKEN_URL=https://keycloak.example.com/realms/REALM/protocol/openid-connect/token
       - KEYCLOAK_CLIENT_ID=healthcheck
       - KEYCLOAK_CLIENT_SECRET=secret
+      - KEYCLOAK_USER_CLIENT_ID=healthcheck-user
+      - KEYCLOAK_USER_CLIENT_SECRET=secret
       - KEYCLOAK_USER_REDIRECT_URI=https://healthcheck.example.com/callback
       - KEYCLOAK_BROKER_IDP=idp
       - KEYCLOAK_USERNAME=testuser
       - KEYCLOAK_PASSWORD=password
-      # Optional. Defaults to KEYCLOAK_CLIENT_ID / KEYCLOAK_CLIENT_SECRET.
-      # - KEYCLOAK_USER_CLIENT_ID=healthcheck-user
-      # - KEYCLOAK_USER_CLIENT_SECRET=
      ports:
       - 8080:8080
    documenatation-and-test:
