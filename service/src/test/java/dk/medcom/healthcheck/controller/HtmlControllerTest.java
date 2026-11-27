@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class HtmlControllerTest {
+    private static final Status KEYCLOAK_OK = new Status(true, null, 0L);
     private HtmlController controller;
     private HealthcheckService healthcheckService;
 
@@ -32,7 +33,7 @@ public class HtmlControllerTest {
         var shortLink = new Status(true, null, 30L);
         var accessTokenForVideoApi = new Status(true, null, 40L);
         var smsStatus = new Status(true, null, 50L);
-        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.of(smsStatus), accessTokenForVideoApi, UUID.randomUUID());
+        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.of(smsStatus), accessTokenForVideoApi, UUID.randomUUID(), KEYCLOAK_OK, KEYCLOAK_OK);
 
         var healthCheckModel = new HealthCheckModel();
         healthCheckModel.setPhone("911");
@@ -45,13 +46,15 @@ public class HtmlControllerTest {
         List<dk.medcom.healthcheck.controller.model.Status> statuList = (List<dk.medcom.healthcheck.controller.model.Status>) result.getModel().get("status");
         assertNotNull(statuList);
 
-        assertEquals(6, statuList.size());
+        assertEquals(8, statuList.size());
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Get token from STS", true,  10L, null), statuList.get(0));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create access token for VideoAPI", true, 40L, null), statuList.get(1));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create meeting in VideoAPI",  true,20L, null), statuList.get(2));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Access shortlink page", true,  30L, null), statuList.get(3));
-        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Send SMS", true,  50L, null), statuList.get(4));
-        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 150L, null), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (client credentials)", true, 0L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (test user)", true, 0L, null), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Send SMS", true,  50L, null), statuList.get(6));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 150L, null), statuList.get(7));
         assertEquals(serviceResponse.meetingUuid(), result.getModel().get("uuid"));
     }
 
@@ -61,7 +64,7 @@ public class HtmlControllerTest {
         var videoApi = new Status(true, null, 20L);
         var shortLink = new Status(true, null, 30L);
         var accessTokenForVideoApi = new Status(true, null, 40L);
-        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID());
+        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID(), KEYCLOAK_OK, KEYCLOAK_OK);
 
         Mockito.when(healthcheckService.checkHealthWithProvisioning()).thenReturn(serviceResponse);
 
@@ -71,12 +74,14 @@ public class HtmlControllerTest {
         List<dk.medcom.healthcheck.controller.model.Status> statuList = (List<dk.medcom.healthcheck.controller.model.Status>) result.getModel().get("status");
         assertNotNull(statuList);
 
-        assertEquals(5, statuList.size());
+        assertEquals(7, statuList.size());
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Get token from STS", true,  10L, null), statuList.get(0));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create access token for VideoAPI", true, 40L, null), statuList.get(1));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create meeting in VideoAPI",  true,20L, null), statuList.get(2));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Access shortlink page", true,  30L, null), statuList.get(3));
-        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 100L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (client credentials)", true, 0L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (test user)", true, 0L, null), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 100L, null), statuList.get(6));
         assertEquals(serviceResponse.meetingUuid(), result.getModel().get("uuid"));
     }
 
@@ -86,7 +91,7 @@ public class HtmlControllerTest {
         var videoApi = new Status(true, null, 20L);
         var shortLink = new Status(true, null, 30L);
         var accessTokenForVideoApi = new Status(true, null, 40L);
-        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID());
+        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID(), KEYCLOAK_OK, KEYCLOAK_OK);
 
         var healthCheckModel = new HealthCheckModel();
         healthCheckModel.setPhone("");
@@ -99,12 +104,14 @@ public class HtmlControllerTest {
         List<dk.medcom.healthcheck.controller.model.Status> statuList = (List<dk.medcom.healthcheck.controller.model.Status>) result.getModel().get("status");
         assertNotNull(statuList);
 
-        assertEquals(5, statuList.size());
+        assertEquals(7, statuList.size());
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Get token from STS", true,  10L, null), statuList.get(0));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create access token for VideoAPI", true, 40L, null), statuList.get(1));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create meeting in VideoAPI",  true,20L, null), statuList.get(2));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Access shortlink page", true,  30L, null), statuList.get(3));
-        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 100L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (client credentials)", true, 0L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (test user)", true, 0L, null), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", true, 100L, null), statuList.get(6));
         assertEquals(serviceResponse.meetingUuid(), result.getModel().get("uuid"));
     }
 
@@ -114,7 +121,7 @@ public class HtmlControllerTest {
         var videoApi = new Status(true, null, 20L);
         var shortLink = new Status(false, "msg2", 30L);
         var accessTokenForVideoApi = new Status(false, "msg1", 40L);
-        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID());
+        var serviceResponse = new HealthcheckResult(sts, videoApi, shortLink, Optional.empty(), accessTokenForVideoApi, UUID.randomUUID(), KEYCLOAK_OK, KEYCLOAK_OK);
 
         Mockito.when(healthcheckService.checkHealthWithProvisioning()).thenReturn(serviceResponse);
 
@@ -124,11 +131,31 @@ public class HtmlControllerTest {
         List<dk.medcom.healthcheck.controller.model.Status> statuList = (List<dk.medcom.healthcheck.controller.model.Status>) result.getModel().get("status");
         assertNotNull(statuList);
 
-        assertEquals(5, statuList.size());
+        assertEquals(7, statuList.size());
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Get token from STS", true,  10L, null), statuList.get(0));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create access token for VideoAPI", false, 40L, "msg1"), statuList.get(1));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Create meeting in VideoAPI",  true,20L, null), statuList.get(2));
         assertEquals(new dk.medcom.healthcheck.controller.model.Status("Access shortlink page", false,  30L, "msg2"), statuList.get(3));
-        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", false, 100L, "msg1,msg2"), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (client credentials)", true, 0L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (test user)", true, 0L, null), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", false, 100L, "msg1,msg2"), statuList.get(6));
+    }
+
+    @Test
+    public void testKeycloakFails() {
+        var ok = new Status(true, null, 10L);
+        var keycloakUser = new Status(false, "Wrong HTTP status from Keycloak: 401", 50L);
+        var serviceResponse = new HealthcheckResult(ok, ok, ok, Optional.empty(), ok, UUID.randomUUID(), ok, keycloakUser);
+
+        Mockito.when(healthcheckService.checkHealthWithProvisioning()).thenReturn(serviceResponse);
+
+        var result = controller.execute(null);
+
+        List<dk.medcom.healthcheck.controller.model.Status> statuList = (List<dk.medcom.healthcheck.controller.model.Status>) result.getModel().get("status");
+        assertEquals(7, statuList.size());
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (client credentials)", true, 10L, null), statuList.get(4));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Login to Keycloak (test user)", false, 50L, "Wrong HTTP status from Keycloak: 401"), statuList.get(5));
+        assertEquals(new dk.medcom.healthcheck.controller.model.Status("Total", false, 100L, "Wrong HTTP status from Keycloak: 401"), statuList.get(6));
+        assertEquals(false, result.getModel().get("allOk"));
     }
 }

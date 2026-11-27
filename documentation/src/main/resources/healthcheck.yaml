@@ -31,7 +31,7 @@ paths:
       tags:
         - Healthcheck
       summary: Check health of services
-      description: Check the health of Video API, STS, SMS service and short link service.
+      description: Check the health of Video API, STS, SMS service, short link service and Keycloak login.
       responses:
         '200':
           description: Ok
@@ -87,6 +87,8 @@ components:
         - video-api
         - short-link
         - sms
+        - keycloak-client-credentials-flow
+        - keycloak-user-flow
       properties:
         sts:
           description: STS status
@@ -102,6 +104,12 @@ components:
           $ref: '#/components/schemas/status'
         sms:
           description: SMS service status
+          $ref: '#/components/schemas/status'
+        keycloak-client-credentials-flow:
+          description: Keycloak login using client credentials grant.
+          $ref: '#/components/schemas/status'
+        keycloak-user-flow:
+          description: Keycloak login as test user through the login page and an identity provider (broker) using the authorization code flow with PKCE. The session is ended again by calling logout.
           $ref: '#/components/schemas/status'
 
     status:

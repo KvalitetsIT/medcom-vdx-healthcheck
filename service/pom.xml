@@ -74,6 +74,12 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <!-- Headless browser used for Keycloak test user login -->
+        <dependency>
+            <groupId>org.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+        </dependency>
+
         <!-- Logging framework -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

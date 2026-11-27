@@ -15,6 +15,8 @@ public class TimerConfiguration {
     public static final String SERVICE_SHORT_LINK = "shortLink";
     public static final String SERVICE_ACCESS_TOKEN_FOR_VIDEO_API = "accessTokenForVideoApi";
     public static final String PROVISION_ROOM = "provisionRoom";
+    public static final String SERVICE_KEYCLOAK_CLIENT_CREDENTIALS = "keycloakClientCredentials";
+    public static final String SERVICE_KEYCLOAK_USER = "keycloakUser";
 
     @Bean
     public MeterBinder stsTimer() {
@@ -39,6 +41,16 @@ public class TimerConfiguration {
     @Bean
     public MeterBinder provisionTimer() {
         return createTimer(PROVISION_ROOM);
+    }
+
+    @Bean
+    public MeterBinder keycloakClientCredentialsTimer() {
+        return createTimer(SERVICE_KEYCLOAK_CLIENT_CREDENTIALS);
+    }
+
+    @Bean
+    public MeterBinder keycloakUserTimer() {
+        return createTimer(SERVICE_KEYCLOAK_USER);
     }
 
     private MeterBinder createTimer(String service) {

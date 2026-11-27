@@ -36,6 +36,8 @@ public class HealthcheckController implements HealthcheckApi {
         healthcheckResponse.setSts(stsStatus);
         healthcheckResponse.setVideoApi(videoApiStatus);
         healthcheckResponse.setVideoApiAccessToken(accessTokenForVideoApi);
+        healthcheckResponse.setKeycloakClientCredentialsFlow(createStatus(serviceResponse.keycloakClientCredentials()));
+        healthcheckResponse.setKeycloakUserFlow(createStatus(serviceResponse.keycloakUser()));
 
         return ResponseEntity.ok(healthcheckResponse);
     }

@@ -1,6 +1,7 @@
 package dk.medcom.healthcheck.service;
 
 import dk.medcom.healthcheck.client.Result;
+import dk.medcom.healthcheck.client.keycloak.KeycloakClient;
 import dk.medcom.healthcheck.client.security.AuthorizationClient;
 import dk.medcom.healthcheck.client.security.StsClient;
 import dk.medcom.healthcheck.client.security.TokenEncoder;
@@ -35,6 +36,8 @@ public class HealthcheckServiceImplTest {
     private TokenEncoder tokenEncoder;
     private AuthorizationClient smsAuthorizationClient;
     private SmsClient smsClient;
+    private KeycloakClient keycloakClientCredentialsClient;
+    private KeycloakClient keycloakUserClient;
 
     @BeforeEach
     public void setup() {
@@ -46,7 +49,12 @@ public class HealthcheckServiceImplTest {
         smsAuthorizationClient = Mockito.mock(AuthorizationClient.class);
         smsClient = Mockito.mock(SmsClient.class);
 
-        healthcheckService = new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, tokenEncoder, smsAuthorizationClient, smsClient);
+        keycloakClientCredentialsClient = Mockito.mock(KeycloakClient.class);
+        keycloakUserClient = Mockito.mock(KeycloakClient.class);
+        Mockito.when(keycloakClientCredentialsClient.login()).thenReturn(new Result<>(15L, null));
+        Mockito.when(keycloakUserClient.login()).thenReturn(new Result<>(25L, null));
+
+        healthcheckService = new HealthcheckServiceImpl(stsClient, shortLinkClient, authorizationClient, videoApiClient, tokenEncoder, smsAuthorizationClient, smsClient, keycloakClientCredentialsClient, keycloakUserClient);
     }
 
     @Test
@@ -86,6 +94,33 @@ public class HealthcheckServiceImplTest {
 
         Mockito.verifyNoMoreInteractions(stsClient, tokenEncoder, authorizationClient, videoApiClient, shortLinkClient);
     }
+
+
+    @Test
+    public void testBothKeycloakLoginsAreCalledEvenIfStsFails() {
+        Mockito.when(stsClient.requestToken()).thenReturn(new Result<>(false, "STS ERROR", 10L, null));
+
+        var result = healthcheckService.checkHealth();
+
+        assertStatusOk(result.keycloakClientCredentials(), 15L);
+        assertStatusOk(result.keycloakUser(), 25L);
+        assertStatusNotOk(result.sts(), 10L);
+        Mockito.verify(keycloakClientCredentialsClient, times(1)).login();
+        Mockito.verify(keycloakUserClient, times(1)).login();
+    }
+
+    @Test
+    public void testKeycloakUserFailsClientCredentialsOk() {
+        Mockito.when(stsClient.requestToken()).thenReturn(new Result<>(false, "STS ERROR", 10L, null));
+        Mockito.when(keycloakUserClient.login()).thenReturn(new Result<>(false, "Wrong HTTP status from Keycloak: 401", 25L, null));
+
+        var result = healthcheckService.checkHealth();
+
+        assertStatusOk(result.keycloakClientCredentials(), 15L);
+        assertStatusNotOk(result.keycloakUser(), 25L);
+        assertEquals("Wrong HTTP status from Keycloak: 401", result.keycloakUser().message());
+    }
+
 
     @Test
     public void testAllStsNotOk() {

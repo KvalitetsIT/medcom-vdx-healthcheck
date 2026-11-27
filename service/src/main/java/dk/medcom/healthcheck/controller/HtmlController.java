@@ -44,10 +44,9 @@ public class HtmlController {
 
         HealthcheckResult result;
 
-        if(model != null && !StringUtils.isAllEmpty(model.getPhone())) {
+        if (model != null && !StringUtils.isAllEmpty(model.getPhone())) {
             result = healthcheckService.checkHealthWithProvisioningAndSms(model.getPhone().trim());
-        }
-        else {
+        } else {
             result = healthcheckService.checkHealthWithProvisioning();
         }
 
@@ -65,9 +64,11 @@ public class HtmlController {
                 createStatus("Get token from STS", result.sts()),
                 createStatus("Create access token for VideoAPI", result.accessTokenForVideoApi()),
                 createStatus("Create meeting in VideoAPI", result.videoAPi()),
-                createStatus("Access shortlink page", result.shortLink())));
+                createStatus("Access shortlink page", result.shortLink()),
+                createStatus("Login to Keycloak (client credentials)", result.keycloakClientCredentials()),
+                createStatus("Login to Keycloak (test user)", result.keycloakUser())));
 
-        if(result.sms().isPresent()) {
+        if (result.sms().isPresent()) {
             l.add(createStatus("Send SMS", result.sms().get()));
         }
 
@@ -75,7 +76,7 @@ public class HtmlController {
                 l.stream().allMatch(Status::ok),
                 l.stream().mapToLong(Status::responseTime).sum(),
                 l.stream().map(Status::message).filter(Objects::nonNull).collect(Collectors.collectingAndThen(Collectors.joining(","), x -> {
-                    if(x.isEmpty()) {
+                    if (x.isEmpty()) {
                         return null;
                     }
                     return x;
@@ -92,6 +93,8 @@ public class HtmlController {
         return result.sts().ok() &&
                 result.videoAPi().ok() &&
                 result.shortLink().ok() &&
-                result.accessTokenForVideoApi().ok();
+                result.accessTokenForVideoApi().ok() &&
+                result.keycloakClientCredentials().ok() &&
+                result.keycloakUser().ok();
     }
 }
